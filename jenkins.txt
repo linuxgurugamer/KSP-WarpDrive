@@ -37,6 +37,7 @@
 3:WarpDrive.version,GameData/WarpDrive
 3:LICENSE.md,GameData/WarpDrive
 3:README.md,GameData/WarpDrive
+3:Changelog.txt
 
 9:Source
 #

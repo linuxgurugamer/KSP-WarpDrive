@@ -3,158 +3,180 @@ using System.Collections.Generic;
 using UnityEngine;
 using KSP.UI.Screens;
 using KSP.IO;
+using ToolbarControl_NS;
+
 
 namespace WarpDrive
 {
-	[KSPAddon(KSPAddon.Startup.Flight, false)]
-	public class Warpotron9000: MonoBehaviour
-	{
-		public static Warpotron9000 Instance;
+    [KSPAddon(KSPAddon.Startup.MainMenu, true)]
+    public class RegisterToolbar : MonoBehaviour
+    {
+        void Start()
+        {
+            ToolbarControl.RegisterMod(Warpotron9000.MODID, Warpotron9000.MODNAME);
+        }
+    }
 
-		private PluginConfiguration config;
-		private bool gamePaused;
-		private AlcubierreDrive masterDrive;
+    [KSPAddon(KSPAddon.Startup.Flight, false)]
+    public class Warpotron9000 : MonoBehaviour
+    {
+        public static Warpotron9000 Instance;
 
-		// GUI stuff
-		private ApplicationLauncherButton appLauncherButton;
-		private IButton toolbarButton;
-		private bool guiVisible;
-		private bool maximized;
-		private bool refresh;
-		private bool globalHidden;
-		private Rect windowRect;
-		private int guiId;
-		private bool useToolbar;
-		private const ulong lockMask = 900719925474097919;
+        private PluginConfiguration config;
+        private bool gamePaused;
+        private AlcubierreDrive masterDrive;
 
-		/// <summary>
-		/// Kinda constructor
-		/// </summary>
-		public void Awake()
-		{
-			if (Instance != null) {
-				Destroy (this);
-				return;
-			}
-			Instance = this;
-		}
+        // GUI stuff
+        ToolbarControl toolbarControl;
+        //private ApplicationLauncherButton appLauncherButton;
+        //private IButton toolbarButton;
+        private bool guiVisible;
+        private bool maximized;
+        private bool refresh;
+        private bool globalHidden;
+        private Rect windowRect;
+        private int guiId;
+        //private bool useToolbar;
+        private const ulong lockMask = 900719925474097919;
 
-		/// <summary>
-		/// Executed once after Awake
-		/// </summary>
-		public void Start()
-		{
-			guiVisible = false;
-			globalHidden = false;
-			gamePaused = false;
-			refresh = true;
+        /// <summary>
+        /// Kinda constructor
+        /// </summary>
+        public void Awake()
+        {
+            if (Instance != null)
+            {
+                Destroy(this);
+                return;
+            }
+            Instance = this;
+        }
 
-			guiId = GUIUtility.GetControlID (FocusType.Passive);
-			config = PluginConfiguration.CreateForType<Warpotron9000> ();
-			config.load ();
+        /// <summary>
+        /// Executed once after Awake
+        /// </summary>
+        public void Start()
+        {
+            guiVisible = false;
+            globalHidden = false;
+            gamePaused = false;
+            refresh = true;
 
-			windowRect = config.GetValue<Rect> ("windowRect", new Rect (0, 0, 300, 400));
-			useToolbar = config.GetValue<bool> ("useToolbar", false);
-			maximized = config.GetValue<bool> ("maximized", false);
+            guiId = GUIUtility.GetControlID(FocusType.Passive);
+            config = PluginConfiguration.CreateForType<Warpotron9000>();
+            config.load();
 
-			GameEvents.onGUIApplicationLauncherReady.Add(onGUIApplicationLauncherReady);
-			GameEvents.onLevelWasLoaded.Add(onLevelWasLoaded);
-			GameEvents.onVesselChange.Add(onVesselChange);
-			GameEvents.onHideUI.Add(onHideUI);
-			GameEvents.onShowUI.Add(onShowUI);
-			GameEvents.onGamePause.Add (onGamePause);
-			GameEvents.onGameUnpause.Add (onGameUnpause);
-		}
+            windowRect = config.GetValue<Rect>("windowRect", new Rect(0, 0, 300, 400));
+            //useToolbar = config.GetValue<bool>("useToolbar", false);
+            maximized = config.GetValue<bool>("maximized", false);
 
-		/// <summary>
-		/// Hail to The King, baby
-		/// </summary>
-		public void OnDestroy()
-		{
-			GameEvents.onGUIApplicationLauncherReady.Remove (onGUIApplicationLauncherReady);
-			GameEvents.onLevelWasLoaded.Remove(onLevelWasLoaded);
-			GameEvents.onVesselChange.Remove (onVesselChange);
-			GameEvents.onHideUI.Remove (onHideUI);
-			GameEvents.onShowUI.Remove (onShowUI);
-			GameEvents.onGamePause.Remove (onGamePause);
-			GameEvents.onGameUnpause.Remove (onGameUnpause);
+            GameEvents.onGUIApplicationLauncherReady.Add(onGUIApplicationLauncherReady);
+            GameEvents.onLevelWasLoaded.Add(onLevelWasLoaded);
+            GameEvents.onVesselChange.Add(onVesselChange);
+            GameEvents.onHideUI.Add(onHideUI);
+            GameEvents.onShowUI.Add(onShowUI);
+            GameEvents.onGamePause.Add(onGamePause);
+            GameEvents.onGameUnpause.Add(onGameUnpause);
+        }
 
-			UnlockControls ();
-			DestroyLauncher ();
+        /// <summary>
+        /// Hail to The King, baby
+        /// </summary>
+        public void OnDestroy()
+        {
+            GameEvents.onGUIApplicationLauncherReady.Remove(onGUIApplicationLauncherReady);
+            GameEvents.onLevelWasLoaded.Remove(onLevelWasLoaded);
+            GameEvents.onVesselChange.Remove(onVesselChange);
+            GameEvents.onHideUI.Remove(onHideUI);
+            GameEvents.onShowUI.Remove(onShowUI);
+            GameEvents.onGamePause.Remove(onGamePause);
+            GameEvents.onGameUnpause.Remove(onGameUnpause);
 
-			config.SetValue ("windowRect", windowRect);
-			config.SetValue ("useToolbar", useToolbar);
-			config.SetValue ("maximized", maximized);
-			config.save ();
+            UnlockControls();
+            DestroyLauncher();
 
-			if (Instance == this)
-				Instance = null;
-		}
+            config.SetValue("windowRect", windowRect);
+            //config.SetValue("useToolbar", useToolbar);
+            config.SetValue("maximized", maximized);
+            config.save();
 
-		private ControlTypes LockControls()
-		{
-			return InputLockManager.SetControlLock ((ControlTypes)lockMask, this.name);
-		}
+            if (Instance == this)
+                Instance = null;
+        }
 
-		private void UnlockControls()
-		{
-			InputLockManager.RemoveControlLock(this.name);
-		}
+        private ControlTypes LockControls()
+        {
+            return InputLockManager.SetControlLock((ControlTypes)lockMask, this.name);
+        }
 
-		public void onGUIApplicationLauncherReady()
-		{
-			CreateLauncher ();
-		}
+        private void UnlockControls()
+        {
+            InputLockManager.RemoveControlLock(this.name);
+        }
 
-		public void onLevelWasLoaded(GameScenes scene)
-		{
-			onVesselChange(FlightGlobals.ActiveVessel);
-		}
+        public void onGUIApplicationLauncherReady()
+        {
+            CreateLauncher();
+        }
 
-		public void onGamePause() {
-			gamePaused = true;
-			UnlockControls ();
-		}
+        public void onLevelWasLoaded(GameScenes scene)
+        {
+            onVesselChange(FlightGlobals.ActiveVessel);
+        }
 
-		public void onGameUnpause() {
-			gamePaused = false;
-		}
+        public void onGamePause()
+        {
+            gamePaused = true;
+            UnlockControls();
+        }
 
-		private void onHideUI()
-		{
-			globalHidden = true;
-			UnlockControls ();
-		}
+        public void onGameUnpause()
+        {
+            gamePaused = false;
+        }
 
-		private void onShowUI()
-		{
-			globalHidden = false;
-		}
+        private void onHideUI()
+        {
+            globalHidden = true;
+            UnlockControls();
+        }
 
-		public void onVesselChange(Vessel vessel)
-		{
-			masterDrive = vessel.FindPartModulesImplementing<AlcubierreDrive> ().Find (t => !t.isSlave);
-		}
+        private void onShowUI()
+        {
+            globalHidden = false;
+        }
 
-		public void onAppTrue()
-		{
-			guiVisible = true;
-		}
+        public void onVesselChange(Vessel vessel)
+        {
+            masterDrive = vessel.FindPartModulesImplementing<AlcubierreDrive>().Find(t => !t.isSlave);
+        }
 
-		public void onAppFalse()
-		{
-			guiVisible = false;
-			UnlockControls ();
-		}
+        public void onAppTrue()
+        {
+            guiVisible = true;
+        }
 
-		public void onToggle() {
-			guiVisible = !guiVisible;
-			if (!guiVisible) {
-				UnlockControls ();
-			}
-		}
+        public void onAppFalse()
+        {
+            guiVisible = false;
+            UnlockControls();
+        }
 
-		private void CreateLauncher() {
+        public void onToggle()
+        {
+            guiVisible = !guiVisible;
+            if (!guiVisible)
+            {
+                UnlockControls();
+            }
+        }
+
+        internal const string MODID = "AppLaunch";
+        internal const string MODNAME = "Warpotron9000";
+
+        private void CreateLauncher()
+        {
+#if false
 			if (ToolbarManager.ToolbarAvailable && useToolbar) {
 				toolbarButton = ToolbarManager.Instance.add ("Warpotron9000", "AppLaunch");
 				toolbarButton.TexturePath = "WarpDrive/Textures/warpdrive-icon-toolbar";
@@ -175,10 +197,24 @@ namespace WarpDrive
 					ApplicationLauncher.AppScenes.MAPVIEW,
 					GameDatabase.Instance.GetTexture ("WarpDrive/Textures/warpdrive-icon", false)
 				);
-			}
-		}
+#endif
+            if (toolbarControl == null)
+            {
+                toolbarControl = gameObject.AddComponent<ToolbarControl>();
+                toolbarControl.AddToAllToolbars(onAppTrue, onAppFalse,
+                    ApplicationLauncher.AppScenes.FLIGHT | ApplicationLauncher.AppScenes.MAPVIEW,
+                    MODID,
+                    "waButton",
+                    "WarpDrive/Textures/warpdrive-icon",
+                    "WarpDrive/Textures/warpdrive-icon"
+                );
 
-		private void DestroyLauncher() {
+            }
+        }
+
+        private void DestroyLauncher()
+        {
+#if false
 			if (appLauncherButton != null) {
 				ApplicationLauncher.Instance.RemoveModApplication (appLauncherButton);
 				appLauncherButton = null;
@@ -188,121 +224,151 @@ namespace WarpDrive
 				toolbarButton.Destroy ();
 				toolbarButton = null;
 			}
-		}
+#endif
+            if (toolbarControl != null)
+            {
+                toolbarControl.OnDestroy();
+                Destroy(toolbarControl);
+            }
 
-		public void Update()
-		{
-			if (gamePaused)
-				return;
-		}
+        }
 
-		public void OnGUI()
-		{
-			if (gamePaused || globalHidden || !guiVisible)
-				return;
+        public void Update()
+        {
+            if (gamePaused)
+                return;
+        }
 
-			if (refresh) {
-				windowRect.height = 0;
-				refresh = false;
-			}
+        public void OnGUI()
+        {
+            if (gamePaused || globalHidden || !guiVisible)
+                return;
 
-			windowRect = Layout.Window (
-				guiId,
-				windowRect,
-				DrawGUI,
-				"Warpotron 9000",
-				GUILayout.ExpandWidth(true),
-				GUILayout.ExpandHeight(true)
-			);
+            if (refresh)
+            {
+                windowRect.height = 0;
+                refresh = false;
+            }
 
-			if (windowRect.Contains (Event.current.mousePosition)) {
-				LockControls ();
-			} else {
-				UnlockControls ();
-			}
-		}
+            windowRect = Layout.Window(
+                guiId,
+                windowRect,
+                DrawGUI,
+                "Warpotron 9000",
+                GUILayout.ExpandWidth(true),
+                GUILayout.ExpandHeight(true)
+            );
 
-		public void DrawGUI(int guiId)
-		{
-			if (masterDrive == null) {
-				guiVisible = false;
-				return;
-			}
+            if (windowRect.Contains(Event.current.mousePosition))
+            {
+                LockControls();
+            }
+            else
+            {
+                UnlockControls();
+            }
+        }
 
-			GUILayout.BeginVertical ();
-			Layout.LabelAndText ("Upgrade Status", masterDrive.isUpgraded ? "Butterfly" : "Snail");
-			Layout.LabelAndText ("Current Gravity Force", masterDrive.gravityPull.ToString("F3") + " g");
-			Layout.LabelAndText ("Speed Restricted by G", masterDrive.speedLimit.ToString("F3") + " C");
-			Layout.LabelAndText ("Current Speed Factor", masterDrive.SelectedSpeed.ToString("F3") + " C");
-			Layout.LabelAndText ("Maximum Speed Factor", masterDrive.MaxAllowedSpeed.ToString("F3") + " C");
+        public void DrawGUI(int guiId)
+        {
+            if (masterDrive == null)
+            {
+                guiVisible = false;
+                return;
+            }
 
-			if (maximized) {
-				if (Layout.Button ("Minimize")) {
-					maximized = false;
-					refresh = true;
-				}
+            GUILayout.BeginVertical();
+            Layout.LabelAndText("Upgrade Status", masterDrive.isUpgraded ? "Butterfly" : "Snail");
+            Layout.LabelAndText("Current Gravity Force", masterDrive.gravityPull.ToString("F3") + " g");
+            Layout.LabelAndText("Speed Restricted by G", masterDrive.speedLimit.ToString("F3") + " C");
+            Layout.LabelAndText("Current Speed Factor", masterDrive.SelectedSpeed.ToString("F3") + " C");
+            Layout.LabelAndText("Maximum Speed Factor", masterDrive.MaxAllowedSpeed.ToString("F3") + " C");
 
-				Layout.LabelAndText ("Minimal Required EM", masterDrive.minimumRequiredExoticMatter.ToString ("F3"));
-				Layout.LabelAndText ("Current Required EM", masterDrive.requiredForCurrentFactor.ToString ("F3"));
-				Layout.LabelAndText ("Maximum Required EM", masterDrive.requiredForMaximumFactor.ToString ("F3"));
+            if (maximized)
+            {
+                if (Layout.Button("Minimize"))
+                {
+                    maximized = false;
+                    refresh = true;
+                }
 
-				Layout.LabelAndText ("Current Drives Power", masterDrive.drivesTotalPower.ToString ("F3"));
-				Layout.LabelAndText ("Vessel Total Mass", masterDrive.vessel.totalMass.ToString ("F3") + " tons");
-				Layout.LabelAndText ("Drives Efficiency", masterDrive.drivesEfficiencyRatio.ToString ("F3"));
+                Layout.LabelAndText("Minimal Required EM", masterDrive.minimumRequiredExoticMatter.ToString("F3"));
+                Layout.LabelAndText("Current Required EM", masterDrive.requiredForCurrentFactor.ToString("F3"));
+                Layout.LabelAndText("Maximum Required EM", masterDrive.requiredForMaximumFactor.ToString("F3"));
 
-//				Layout.LabelAndText ("Magnitude Diff", masterDrive.magnitudeDiff.ToString ());
-//				Layout.LabelAndText ("Magnitude Change", masterDrive.magnitudeChange.ToString ());
-			} else if (Layout.Button ("Maximize"))
-				maximized = true;
+                Layout.LabelAndText("Current Drives Power", masterDrive.drivesTotalPower.ToString("F3"));
+                Layout.LabelAndText("Vessel Total Mass", masterDrive.vessel.totalMass.ToString("F3") + " tons");
+                Layout.LabelAndText("Drives Efficiency", masterDrive.drivesEfficiencyRatio.ToString("F3"));
 
-			if (Layout.Button ("alarm"))
-				masterDrive.PlayAlarm ();
+                //				Layout.LabelAndText ("Magnitude Diff", masterDrive.magnitudeDiff.ToString ());
+                //				Layout.LabelAndText ("Magnitude Change", masterDrive.magnitudeChange.ToString ());
+            }
+            else if (Layout.Button("Maximize"))
+                maximized = true;
 
-			if (TimeWarp.CurrentRateIndex == 0) {
-				GUILayout.BeginHorizontal ();
-				if (Layout.Button ("Decrease Factor", Palette.red, GUILayout.Width (141))) {
-					masterDrive.DecreaseFactor ();
-				}
-				if (Layout.Button ("Increase Factor", Palette.green, GUILayout.Width (141))) {
-					masterDrive.IncreaseFactor ();
-				}
-				GUILayout.EndHorizontal ();
+            if (Layout.Button("alarm"))
+                masterDrive.PlayAlarm();
 
-				if (Layout.Button ("Reduce Factor", Palette.blue)) {
-					masterDrive.ReduceFactor ();
-				}
+            if (TimeWarp.CurrentRateIndex == 0)
+            {
+                GUILayout.BeginHorizontal();
+                if (Layout.Button("Decrease Factor", Palette.red, GUILayout.Width(141)))
+                {
+                    masterDrive.DecreaseFactor();
+                }
+                if (Layout.Button("Increase Factor", Palette.green, GUILayout.Width(141)))
+                {
+                    masterDrive.IncreaseFactor();
+                }
+                GUILayout.EndHorizontal();
 
-				if (!masterDrive.inWarp) {
-					if (Layout.Button ("Activate Warp Drive", Palette.green)) {
-						masterDrive.ActivateWarpDrive ();
-					}
-				} else if (Layout.Button ("Deactivate Warp Drive", Palette.red)) {
-					masterDrive.DeactivateWarpDrive ();
-				}
+                if (Layout.Button("Reduce Factor", Palette.blue))
+                {
+                    masterDrive.ReduceFactor();
+                }
 
-				if (!masterDrive.containmentField) {
-					if (Layout.Button ("Activate Containment Field", Palette.green)) {
-						masterDrive.StartContainment ();
-					}
-				} else if (Layout.Button ("Deactivate Containment Field", Palette.red)) {
-					masterDrive.StopContainment ();
-				}
-			}
+                if (!masterDrive.inWarp)
+                {
+                    if (Layout.Button("Activate Warp Drive", Palette.green))
+                    {
+                        masterDrive.ActivateWarpDrive();
+                    }
+                }
+                else if (Layout.Button("Deactivate Warp Drive", Palette.red))
+                {
+                    masterDrive.DeactivateWarpDrive();
+                }
 
-			if (Layout.Button ("Close", Palette.red))
-			if (appLauncherButton != null)
-				appLauncherButton.SetFalse ();
-			else
-				onToggle ();
+                if (!masterDrive.containmentField)
+                {
+                    if (Layout.Button("Activate Containment Field", Palette.green))
+                    {
+                        masterDrive.StartContainment();
+                    }
+                }
+                else if (Layout.Button("Deactivate Containment Field", Palette.red))
+                {
+                    masterDrive.StopContainment();
+                }
+            }
 
-			if (Layout.Button("Switch Toolbar")) {
-				useToolbar = !useToolbar;
-				DestroyLauncher ();
-				CreateLauncher ();
-			}
+            if (Layout.Button("Close", Palette.red))
+                toolbarControl.SetFalse();
+#if false
+            if (appLauncherButton != null)
+                    appLauncherButton.SetFalse();
+                else
+                    onToggle();
 
-			GUILayout.EndVertical ();
-			GUI.DragWindow ();
-		}
-	}
+            if (Layout.Button("Switch Toolbar"))
+            {
+                useToolbar = !useToolbar;
+                DestroyLauncher();
+                CreateLauncher();
+            }
+#endif
+            GUILayout.EndVertical();
+            GUI.DragWindow();
+        }
+    }
 }

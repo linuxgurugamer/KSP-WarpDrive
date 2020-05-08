@@ -5,6 +5,7 @@
 
 using System;
 using UnityEngine;
+using ClickThroughFix;
 
 namespace WarpDrive
 {
@@ -203,7 +204,9 @@ namespace WarpDrive
 			// Fix rect width and height not being integers to avoid blurry font rendering
 			screenRect.width = (float)Math.Floor (screenRect.width);
 			screenRect.height = (float)Math.Floor (screenRect.height);
-			return GUILayout.Window (id, screenRect, func, title, Styles.window, options);
+
+			Styles.SetSkin();
+			return ClickThruBlocker.GUILayoutWindow (id, screenRect, func, title, Styles.window, options);
 		}
 
 		/// <summary>

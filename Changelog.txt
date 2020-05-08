@@ -1,0 +1,11 @@
+Changelog
+
+0.9.3
+	Added support for Clickthroughblocker
+	Added support for the ToolbarController
+	Added two alternate skins (stock KSP & stock Unity) to replace the flat skin of the original mod
+	Added settings page where the skin can be selected
+	Added AssemblyVersion.tt
+	Added Installchecker.cs
+	Commented out unused code in Styles.cs
+	Updated with build process

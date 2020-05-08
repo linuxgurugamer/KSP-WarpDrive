@@ -1,4 +1,5 @@
-﻿/*
+﻿#if false
+/*
 Copyright (c) 2013-2016, Maik Schreiber
 All rights reserved.
 
@@ -790,3 +791,4 @@ namespace WarpDrive {
 
 	#endregion
 }
+#endif

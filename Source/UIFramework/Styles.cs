@@ -8,378 +8,440 @@ using UnityEngine;
 
 namespace WarpDrive
 {
-	internal class Styles
-	{
-		internal static GUIStyle textCommon;
-
-		internal static GUIStyle box;
-		internal static GUIStyle label;
-		internal static GUIStyle textField;
-		internal static GUIStyle textArea;
-		internal static GUIStyle button;
-		internal static GUIStyle toggle;
-		internal static GUIStyle window;
-		internal static GUIStyle horizontalSlider;
-		internal static GUIStyle horizontalSliderThumb;
-		internal static GUIStyle verticalSlider;
-		internal static GUIStyle verticalSliderThumb;
-		internal static GUIStyle horizontalScrollbar;
-		internal static GUIStyle horizontalScrollbarThumb;
-		internal static GUIStyle horizontalScrollbarLeftButton;
-		internal static GUIStyle horizontalScrollbarRightButton;
-		internal static GUIStyle verticalScrollbar;
-		internal static GUIStyle verticalScrollbarThumb;
-		internal static GUIStyle verticalScrollbarUpButton;
-		internal static GUIStyle verticalScrollbarDownButton;
-		internal static GUIStyle scrollView;
-
-		internal static GUIStyle selectionGrid;
-
-		internal const int fontSize = 14;
-		internal static Font mainFont = GUI.skin.font;
-		internal static FontStyle fontStyle = FontStyle.Bold;
-
-		internal static void InitStyles() {
-			// Defaults
-
-			// normal, hover, active, onNormal, onHover, onActive, focused, onFocused
-			// --- background = null
-			// --- textColor = RGBA(0.000, 0.000, 0.000, 1.000)
-			//
-			// border = RectOffset (l:0 r:0 t:0 b:0)
-			// margin = RectOffset (l:0 r:0 t:0 b:0)
-			// padding = RectOffset (l:0 r:0 t:0 b:0)
-			// overflow = RectOffset (l:0 r:0 t:0 b:0)
-			// clipOffset = Vector2 (0.0, 0.0)
-			//
-			// font = null
-			// imagePosition = ImagePosition.ImageLeft
-			// alignment = TextAnchor.UpperLeft
-			// wordWrap = false
-			// clipping = TextClipping.Overflow
-			// contentOffset = Vector2 (0.0, 0.0)
-			// fixedWidth = 0
-			// fixedHeight = 0
-			// stretchWidth = true
-			// stretchHeight = false
-			// fontSize = 0
-			// fontStyle = FontStyle.Normal
-			// richText = true
-
-			// Common text style
-			textCommon = new GUIStyle();
-			textCommon.name = "WDTextCommon";
-
-			textCommon.font = GUI.skin.font;
-			textCommon.fontSize = fontSize;
-			textCommon.fontStyle = fontStyle;
-
-			textCommon.normal.textColor = Palette.white;
-
-			textCommon.margin = Offsets.square2;
-			textCommon.padding = Offsets.square4;
-
-			// Box style
-			box = new GUIStyle(textCommon);
-			box.name = "WDBox";
-
-			box.normal.background = Palette.tGray20;
+    internal class Styles
+    {
+        internal static GUIStyle textCommon;
+
+        internal static GUIStyle box;
+        internal static GUIStyle label;
+        internal static GUIStyle textField;
+        internal static GUIStyle textArea;
+        internal static GUIStyle button;
+        internal static GUIStyle toggle;
+        internal static GUIStyle window;
+        internal static GUIStyle horizontalSlider;
+        internal static GUIStyle horizontalSliderThumb;
+        internal static GUIStyle verticalSlider;
+        internal static GUIStyle verticalSliderThumb;
+        internal static GUIStyle horizontalScrollbar;
+        internal static GUIStyle horizontalScrollbarThumb;
+        internal static GUIStyle horizontalScrollbarLeftButton;
+        internal static GUIStyle horizontalScrollbarRightButton;
+        internal static GUIStyle verticalScrollbar;
+        internal static GUIStyle verticalScrollbarThumb;
+        internal static GUIStyle verticalScrollbarUpButton;
+        internal static GUIStyle verticalScrollbarDownButton;
+        internal static GUIStyle scrollView;
+
+        internal static GUIStyle selectionGrid;
+
+        internal const int fontSize = 14;
+        internal static Font mainFont = GUI.skin.font;
+        internal static FontStyle fontStyle = FontStyle.Bold;
+
+        internal enum Skin {none, Flat, Unity, Stock};
+        internal static Skin lastSkin = Skin.none;
+        internal static void  SetSkin()
+        {
+            if (lastSkin == Skin.none)
+                InitStyles(); // This sets the flat and unity skin once, no need to reinit
+
+            if (HighLogic.CurrentGame.Parameters.CustomParams<WarpDrive>().stockSkin)
+            {
+                GUI.skin = HighLogic.Skin;
+                lastSkin = Skin.Stock;
+            }
+
+        }
+
+        internal static void InitStyles()
+        {
+            if (!HighLogic.CurrentGame.Parameters.CustomParams<WarpDrive>().flatSkin)
+            {
+                lastSkin = Skin.Unity;
+
+                label = GUI.skin.label;
+                textField = GUI.skin.textField;
+                textArea = GUI.skin.textArea;
+                button = GUI.skin.button;
+                toggle = GUI.skin.toggle;
+                window = GUI.skin.window;
+                horizontalScrollbar = GUI.skin.horizontalScrollbar;
+                horizontalSlider = GUI.skin.horizontalSlider;
+                verticalScrollbar = GUI.skin.verticalScrollbar;
+                verticalSlider = GUI.skin.verticalSlider;
+                scrollView = GUI.skin.scrollView;
+
+                // Box style
+                box = new GUIStyle(textCommon);
+                box.name = "WDBox";
+
+                box.normal.background = Palette.tGray20;
+
+                box.alignment = TextAnchor.MiddleCenter;
+
+                box.wordWrap = true;
+                box.clipping = TextClipping.Clip;
+
+
+                // Selection grid buttons
+                selectionGrid = new GUIStyle(button);
+                selectionGrid.name = "WDSelectionGrid";
+                selectionGrid.alignment = TextAnchor.MiddleCenter;
+            }
+            else
+            {
+
+                lastSkin = Skin.Flat;
+
+                // Defaults
+
+                // normal, hover, active, onNormal, onHover, onActive, focused, onFocused
+                // --- background = null
+                // --- textColor = RGBA(0.000, 0.000, 0.000, 1.000)
+                //
+                // border = RectOffset (l:0 r:0 t:0 b:0)
+                // margin = RectOffset (l:0 r:0 t:0 b:0)
+                // padding = RectOffset (l:0 r:0 t:0 b:0)
+                // overflow = RectOffset (l:0 r:0 t:0 b:0)
+                // clipOffset = Vector2 (0.0, 0.0)
+                //
+                // font = null
+                // imagePosition = ImagePosition.ImageLeft
+                // alignment = TextAnchor.UpperLeft
+                // wordWrap = false
+                // clipping = TextClipping.Overflow
+                // contentOffset = Vector2 (0.0, 0.0)
+                // fixedWidth = 0
+                // fixedHeight = 0
+                // stretchWidth = true
+                // stretchHeight = false
+                // fontSize = 0
+                // fontStyle = FontStyle.Normal
+                // richText = true
 
-			box.alignment = TextAnchor.MiddleCenter;
-
-			box.wordWrap = true;
-			box.clipping = TextClipping.Clip;
-
-			// Label style
-			label = new GUIStyle (textCommon);
-			label.name = "WDLabel";
-
-			label.normal.background = Palette.tTransparent;
-
-			label.wordWrap		= true;
-			label.stretchWidth	= false;
+                // Common text style
+                textCommon = new GUIStyle();
+                textCommon.name = "WDTextCommon";
 
-			// TextField style
-			textField = new GUIStyle(textCommon);
-			textField.name = "WDTextField";
+                textCommon.font = GUI.skin.font;
+                textCommon.fontSize = fontSize;
+                textCommon.fontStyle = fontStyle;
 
-			textField.normal.background = Palette.tGray10;
-			textField.normal.textColor = Palette.dimWhite;
+                textCommon.normal.textColor = Palette.white;
 
-			textField.hover.background = Palette.tGray10;
-			textField.hover.textColor = Palette.white;
+                textCommon.margin = Offsets.square2;
+                textCommon.padding = Offsets.square4;
 
-			textField.onNormal.background = Palette.tGray10;
-			textField.onHover.textColor = Palette.white;
+                // Box style
+                box = new GUIStyle(textCommon);
+                box.name = "WDBox";
 
-			textField.focused.background = Palette.tGray10;
-			textField.focused.textColor = Palette.white;
+                box.normal.background = Palette.tGray20;
 
-			textField.imagePosition = ImagePosition.TextOnly;
-			textField.clipping = TextClipping.Clip;
+                box.alignment = TextAnchor.MiddleCenter;
 
-			// TextArea style
-			textArea = new GUIStyle(textField);
-			textArea.name = "WDTextArea";
+                box.wordWrap = true;
+                box.clipping = TextClipping.Clip;
 
-			textArea.wordWrap = true;
+                // Label style
+                label = new GUIStyle(textCommon);
+                label.name = "WDLabel";
 
-			// Button style
-			button = new GUIStyle (textCommon);
-			button.name = "WDButton";
+                label.normal.background = Palette.tTransparent;
 
-			button.normal.background = Palette.tButtonBack;
-			button.normal.textColor = Palette.white;
+                label.wordWrap = true;
+                label.stretchWidth = false;
 
-			button.hover.background = Palette.tButtonHover;
-			button.hover.textColor = Palette.yellow;
+                // TextField style
+                textField = new GUIStyle(textCommon);
+                textField.name = "WDTextField";
 
-			button.active.background = Palette.tButtonBack;
-			button.active.textColor = Palette.yellow;
+                textField.normal.background = Palette.tGray10;
+                textField.normal.textColor = Palette.dimWhite;
 
-			button.onNormal.background = Palette.tButtonBack;
-			button.onNormal.textColor = Palette.white;
+                textField.hover.background = Palette.tGray10;
+                textField.hover.textColor = Palette.white;
 
-			button.onHover.background = Palette.tButtonHover;
-			button.onHover.textColor = Palette.yellow;
+                textField.onNormal.background = Palette.tGray10;
+                textField.onHover.textColor = Palette.white;
 
-			button.onActive.background = Palette.tButtonBack;
-			button.onActive.textColor = Palette.yellow;
+                textField.focused.background = Palette.tGray10;
+                textField.focused.textColor = Palette.white;
 
-			button.alignment = TextAnchor.MiddleCenter;
-			button.border = Offsets.square4;
+                textField.imagePosition = ImagePosition.TextOnly;
+                textField.clipping = TextClipping.Clip;
 
-			// Toggle
-			toggle = new GUIStyle (button);
-			toggle.name = "WDToggle";
+                // TextArea style
+                textArea = new GUIStyle(textField);
+                textArea.name = "WDTextArea";
 
-			toggle.normal.background = Palette.tTransparent;
-			toggle.normal.textColor = Palette.red;
+                textArea.wordWrap = true;
 
-			toggle.hover.background = Palette.tTransparent;
-			toggle.hover.textColor = Palette.red;
+                // Button style
+                button = new GUIStyle(textCommon);
+                button.name = "WDButton";
 
-			toggle.active.background = Palette.tTransparent;
-//			toggle.active.textColor = Palette.red;
+                button.normal.background = Palette.tButtonBack;
+                button.normal.textColor = Palette.white;
 
-			toggle.onNormal.background = Palette.tTransparent;
-			toggle.onNormal.textColor = Palette.green;
+                button.hover.background = Palette.tButtonHover;
+                button.hover.textColor = Palette.yellow;
 
-			toggle.onHover.background = Palette.tTransparent;
-//			toggle.onHover.textColor = Palette.green;
+                button.active.background = Palette.tButtonBack;
+                button.active.textColor = Palette.yellow;
 
-			toggle.onActive.background = Palette.tTransparent;
-//			toggle.onActive.textColor = Palette.green;
+                button.onNormal.background = Palette.tButtonBack;
+                button.onNormal.textColor = Palette.white;
 
-			toggle.border = new RectOffset (16, 0, 0, 0);
+                button.onHover.background = Palette.tButtonHover;
+                button.onHover.textColor = Palette.yellow;
 
-			toggle.clipping = TextClipping.Clip;
-			toggle.alignment = TextAnchor.MiddleLeft;
+                button.onActive.background = Palette.tButtonBack;
+                button.onActive.textColor = Palette.yellow;
 
-			// Window style
-			window = new GUIStyle(textCommon);
-			window.name = "WDWindow";
+                button.alignment = TextAnchor.MiddleCenter;
+                button.border = Offsets.square4;
 
-			window.normal.background = Palette.tWindowBack;
-//			window.normal.background = Palette.tGray30;
-			window.normal.textColor = Palette.yellow;
+                // Toggle
+                toggle = new GUIStyle(button);
+                toggle.name = "WDToggle";
 
-			window.border = Offsets.square4;
-			window.padding = new RectOffset (8, 8, 28, 8);
+                toggle.normal.background = Palette.tTransparent;
+                toggle.normal.textColor = Palette.red;
 
-			window.alignment = TextAnchor.UpperCenter;
-			window.clipping = TextClipping.Clip;
-			window.contentOffset = new Vector2 (0.0f, -22.0f);
-			window.fontSize = 14;
+                toggle.hover.background = Palette.tTransparent;
+                toggle.hover.textColor = Palette.red;
 
-			// HorizontalSlider
-			horizontalSlider = new GUIStyle();
-			horizontalSlider.name = "WDHorizontalSlider";
+                toggle.active.background = Palette.tTransparent;
+                //			toggle.active.textColor = Palette.red;
 
-			horizontalSlider.normal.background = Palette.tGray20;
+                toggle.onNormal.background = Palette.tTransparent;
+                toggle.onNormal.textColor = Palette.green;
 
-			horizontalSlider.margin = Offsets.square4;
-			horizontalSlider.padding = Offsets.square2;
+                toggle.onHover.background = Palette.tTransparent;
+                //			toggle.onHover.textColor = Palette.green;
 
-			horizontalSlider.imagePosition = ImagePosition.ImageOnly;
-			horizontalSlider.clipping = TextClipping.Clip;
+                toggle.onActive.background = Palette.tTransparent;
+                //			toggle.onActive.textColor = Palette.green;
 
-			horizontalSlider.fixedHeight = 20;
+                toggle.border = new RectOffset(16, 0, 0, 0);
 
-			// HorizontalSliderThumb
-			horizontalSliderThumb = new GUIStyle(button);
-			horizontalSliderThumb.name = "WDHorizontalSliderThumb";
+                toggle.clipping = TextClipping.Clip;
+                toggle.alignment = TextAnchor.MiddleLeft;
 
-//			horizontalSliderThumb.normal.background = Palette.tGray30;
+                // Window style
+                window = new GUIStyle(textCommon);
+                window.name = "WDWindow";
 
-//			horizontalSliderThumb.hover.background = Palette.tGray40;
+                window.normal.background = Palette.tWindowBack;
+                //			window.normal.background = Palette.tGray30;
+                window.normal.textColor = Palette.yellow;
 
-			horizontalSliderThumb.fixedWidth = 30;
-			horizontalSliderThumb.fixedHeight = 16;
+                window.border = Offsets.square4;
+                window.padding = new RectOffset(8, 8, 28, 8);
 
-			//Vertical slider
-			verticalSlider = new GUIStyle();
-			verticalSlider.name = "WDVerticalSlider";
+                window.alignment = TextAnchor.UpperCenter;
+                window.clipping = TextClipping.Clip;
+                window.contentOffset = new Vector2(0.0f, -22.0f);
+                window.fontSize = 14;
 
-			verticalSlider.normal.background = Palette.tGray10;
-			verticalSlider.normal.textColor = Palette.transparent;
+                // HorizontalSlider
+                horizontalSlider = new GUIStyle();
+                horizontalSlider.name = "WDHorizontalSlider";
 
-			verticalSlider.margin = Offsets.square2;
-			verticalSlider.padding = Offsets.square2;
+                horizontalSlider.normal.background = Palette.tGray20;
 
-			horizontalSlider.imagePosition = ImagePosition.ImageOnly;
-			horizontalSlider.clipping = TextClipping.Clip;
+                horizontalSlider.margin = Offsets.square4;
+                horizontalSlider.padding = Offsets.square2;
 
-			verticalSlider.fixedWidth = 17;
-			verticalSlider.stretchWidth = false;
-			verticalSlider.stretchHeight = true;
+                horizontalSlider.imagePosition = ImagePosition.ImageOnly;
+                horizontalSlider.clipping = TextClipping.Clip;
 
-			// Vertical slider thumb
-			verticalSliderThumb = new GUIStyle();
-			verticalSliderThumb.name = "WDVerticalSliderThumb";
+                horizontalSlider.fixedHeight = 20;
 
-			verticalSliderThumb.normal.background = Palette.tGray30;
+                // HorizontalSliderThumb
+                horizontalSliderThumb = new GUIStyle(button);
+                horizontalSliderThumb.name = "WDHorizontalSliderThumb";
 
-			verticalSliderThumb.hover.background = Palette.tGray40;
+                //			horizontalSliderThumb.normal.background = Palette.tGray30;
 
-			verticalSliderThumb.fixedWidth = 13;
-			verticalSliderThumb.fixedHeight = 30;
+                //			horizontalSliderThumb.hover.background = Palette.tGray40;
 
-			// Horizontal scroll bar
-			horizontalScrollbar = new GUIStyle();
-			horizontalScrollbar.name = "WDHorizontalScrollbar";
+                horizontalSliderThumb.fixedWidth = 30;
+                horizontalSliderThumb.fixedHeight = 16;
 
-			horizontalScrollbar.normal.background = Palette.tGray10;
-			horizontalScrollbar.normal.textColor = Palette.transparent;
+                //Vertical slider
+                verticalSlider = new GUIStyle();
+                verticalSlider.name = "WDVerticalSlider";
 
-			horizontalScrollbar.margin = Offsets.square2;
-			horizontalScrollbar.padding = Offsets.square2;
+                verticalSlider.normal.background = Palette.tGray10;
+                verticalSlider.normal.textColor = Palette.transparent;
 
-			horizontalScrollbar.imagePosition = ImagePosition.ImageOnly;
-			horizontalScrollbar.clipping = TextClipping.Clip;
+                verticalSlider.margin = Offsets.square2;
+                verticalSlider.padding = Offsets.square2;
 
-			horizontalScrollbar.fixedHeight = 19;
+                horizontalSlider.imagePosition = ImagePosition.ImageOnly;
+                horizontalSlider.clipping = TextClipping.Clip;
 
-			// Horizontal Scrollbar Thumb
-			horizontalScrollbarThumb = new GUIStyle();
-			horizontalScrollbarThumb.name = "WDHorizontalScrollbarThumb";
+                verticalSlider.fixedWidth = 17;
+                verticalSlider.stretchWidth = false;
+                verticalSlider.stretchHeight = true;
 
-			horizontalScrollbarThumb.normal.background = Palette.tGray30;
+                // Vertical slider thumb
+                verticalSliderThumb = new GUIStyle();
+                verticalSliderThumb.name = "WDVerticalSliderThumb";
 
-			horizontalScrollbarThumb.hover.background = Palette.tGray40;
+                verticalSliderThumb.normal.background = Palette.tGray30;
 
-			horizontalScrollbarThumb.fixedHeight = 15;
+                verticalSliderThumb.hover.background = Palette.tGray40;
 
-			// Horizontal scrollbar left button
-			horizontalScrollbarLeftButton = new GUIStyle ();
-			horizontalScrollbarLeftButton.name = "WDHorizontalScrollbarLeftButton";
+                verticalSliderThumb.fixedWidth = 13;
+                verticalSliderThumb.fixedHeight = 30;
 
-			// Horizontal scrollbar right button
-			horizontalScrollbarRightButton = new GUIStyle ();
-			horizontalScrollbarRightButton.name = "WDHorizontalScrollbarRightButton";
+                // Horizontal scroll bar
+                horizontalScrollbar = new GUIStyle();
+                horizontalScrollbar.name = "WDHorizontalScrollbar";
 
-			// Vertical scrollbar
-			verticalScrollbar = new GUIStyle();
-			verticalScrollbar.name = "WDVerticalScrollbar";
+                horizontalScrollbar.normal.background = Palette.tGray10;
+                horizontalScrollbar.normal.textColor = Palette.transparent;
 
-			verticalScrollbar.normal.background = Palette.tGray10;
+                horizontalScrollbar.margin = Offsets.square2;
+                horizontalScrollbar.padding = Offsets.square2;
 
-			verticalScrollbar.margin = Offsets.square2;
-			verticalScrollbar.padding = Offsets.square2;
+                horizontalScrollbar.imagePosition = ImagePosition.ImageOnly;
+                horizontalScrollbar.clipping = TextClipping.Clip;
 
-			verticalScrollbar.clipping = TextClipping.Clip;
-			verticalScrollbar.fixedWidth = 19;
+                horizontalScrollbar.fixedHeight = 19;
 
-			// Vertical scrollbar thumb
-			verticalScrollbarThumb = new GUIStyle();
-			verticalScrollbarThumb.name = "WDVerticalScrollbarThumb";
+                // Horizontal Scrollbar Thumb
+                horizontalScrollbarThumb = new GUIStyle();
+                horizontalScrollbarThumb.name = "WDHorizontalScrollbarThumb";
 
-			verticalScrollbarThumb.normal.background = Palette.tGray30;
+                horizontalScrollbarThumb.normal.background = Palette.tGray30;
 
-			verticalScrollbarThumb.hover.background = Palette.tGray40;
+                horizontalScrollbarThumb.hover.background = Palette.tGray40;
 
-			verticalScrollbarThumb.fixedWidth = 15;
-			verticalScrollbarThumb.stretchWidth = false;
+                horizontalScrollbarThumb.fixedHeight = 15;
 
-			// verticalScrollbarUpButton
-			verticalScrollbarUpButton = new GUIStyle();
-			verticalScrollbarUpButton.name = "WDVerticalScrollbarUpButton";
+                // Horizontal scrollbar left button
+                horizontalScrollbarLeftButton = new GUIStyle();
+                horizontalScrollbarLeftButton.name = "WDHorizontalScrollbarLeftButton";
 
-			//verticalScrollbarDownButton
-			verticalScrollbarDownButton = new GUIStyle ();
-			verticalScrollbarDownButton.name = "WDVerticalScrollbarDownButton";
+                // Horizontal scrollbar right button
+                horizontalScrollbarRightButton = new GUIStyle();
+                horizontalScrollbarRightButton.name = "WDHorizontalScrollbarRightButton";
 
-			// Scrollview style
-			scrollView = new GUIStyle(textCommon);
-			scrollView.name = "WDScrollView";
+                // Vertical scrollbar
+                verticalScrollbar = new GUIStyle();
+                verticalScrollbar.name = "WDVerticalScrollbar";
 
-			scrollView.normal.background = Palette.tGray20;
+                verticalScrollbar.normal.background = Palette.tGray10;
 
-			scrollView.padding = Offsets.square2;
+                verticalScrollbar.margin = Offsets.square2;
+                verticalScrollbar.padding = Offsets.square2;
 
-			scrollView.clipping = TextClipping.Clip;
+                verticalScrollbar.clipping = TextClipping.Clip;
+                verticalScrollbar.fixedWidth = 19;
 
-			// Selection grid buttons
-			selectionGrid = new GUIStyle (button);
-			selectionGrid.name = "WDSelectionGrid";
-			selectionGrid.alignment = TextAnchor.MiddleCenter;
-		}
+                // Vertical scrollbar thumb
+                verticalScrollbarThumb = new GUIStyle();
+                verticalScrollbarThumb.name = "WDVerticalScrollbarThumb";
 
-		/// <summary>
-		/// Do not use this function in your mod, as it overrides default unity skin
-		/// </summary>
-		internal static void OverrideUnity() {
-			GUI.skin.box = box;
-			GUI.skin.label = label;
-			GUI.skin.textField = textField;
-			GUI.skin.textArea = textArea;
-			GUI.skin.button = button;
-			GUI.skin.toggle = toggle;
-			GUI.skin.window	= window;
-			GUI.skin.horizontalSlider = horizontalSlider;
-			GUI.skin.horizontalSliderThumb = horizontalSliderThumb;
-			GUI.skin.verticalSlider = verticalSlider;
-			GUI.skin.verticalSliderThumb = verticalSliderThumb;
-			GUI.skin.horizontalScrollbar = horizontalScrollbar;
-			GUI.skin.horizontalScrollbarThumb = horizontalScrollbarThumb;
-			GUI.skin.horizontalScrollbarLeftButton = horizontalScrollbarLeftButton;
-			GUI.skin.horizontalScrollbarRightButton = horizontalScrollbarRightButton;
-			GUI.skin.verticalScrollbar = verticalScrollbar;
-			GUI.skin.verticalScrollbarThumb = verticalScrollbarThumb;
-			GUI.skin.verticalScrollbarUpButton = verticalScrollbarUpButton;
-			GUI.skin.verticalScrollbarDownButton = verticalScrollbarDownButton;
-			GUI.skin.scrollView = scrollView;
+                verticalScrollbarThumb.normal.background = Palette.tGray30;
 
-			GUI.skin.font = mainFont;
-		}
+                verticalScrollbarThumb.hover.background = Palette.tGray40;
 
-		/// <summary>
-		/// Overrides the KSP skin.
-		/// </summary>
-		internal static void OverrideKSP() {
-			HighLogic.Skin.box = box;
-			HighLogic.Skin.label = label;
-			HighLogic.Skin.textField = textField;
-			HighLogic.Skin.textArea = textArea;
-			HighLogic.Skin.button = button;
-			HighLogic.Skin.toggle = toggle;
-			HighLogic.Skin.window	= window;
-			HighLogic.Skin.horizontalSlider = horizontalSlider;
-			HighLogic.Skin.horizontalSliderThumb = horizontalSliderThumb;
-			HighLogic.Skin.verticalSlider = verticalSlider;
-			HighLogic.Skin.verticalSliderThumb = verticalSliderThumb;
-			HighLogic.Skin.horizontalScrollbar = horizontalScrollbar;
-			HighLogic.Skin.horizontalScrollbarThumb = horizontalScrollbarThumb;
-			HighLogic.Skin.horizontalScrollbarLeftButton = horizontalScrollbarLeftButton;
-			HighLogic.Skin.horizontalScrollbarRightButton = horizontalScrollbarRightButton;
-			HighLogic.Skin.verticalScrollbar = verticalScrollbar;
-			HighLogic.Skin.verticalScrollbarThumb = verticalScrollbarThumb;
-			HighLogic.Skin.verticalScrollbarUpButton = verticalScrollbarUpButton;
-			HighLogic.Skin.verticalScrollbarDownButton = verticalScrollbarDownButton;
-			HighLogic.Skin.scrollView = scrollView;
+                verticalScrollbarThumb.fixedWidth = 15;
+                verticalScrollbarThumb.stretchWidth = false;
 
-			HighLogic.Skin.font = mainFont;
-		}
-	}
+                // verticalScrollbarUpButton
+                verticalScrollbarUpButton = new GUIStyle();
+                verticalScrollbarUpButton.name = "WDVerticalScrollbarUpButton";
+
+                //verticalScrollbarDownButton
+                verticalScrollbarDownButton = new GUIStyle();
+                verticalScrollbarDownButton.name = "WDVerticalScrollbarDownButton";
+
+                // Scrollview style
+                scrollView = new GUIStyle(textCommon);
+                scrollView.name = "WDScrollView";
+
+                scrollView.normal.background = Palette.tGray20;
+
+                scrollView.padding = Offsets.square2;
+
+                scrollView.clipping = TextClipping.Clip;
+
+                // Selection grid buttons
+                selectionGrid = new GUIStyle(button);
+                selectionGrid.name = "WDSelectionGrid";
+                selectionGrid.alignment = TextAnchor.MiddleCenter;
+            }
+        }
+
+#if false
+        /// <summary>
+        /// Do not use this function in your mod, as it overrides default unity skin
+        /// </summary>
+        internal static void OverrideUnity()
+        {
+            if (HighLogic.CurrentGame.Parameters.CustomParams<WarpDrive>().flatSkin)
+            {
+                GUI.skin.box = box;
+                GUI.skin.label = label;
+                GUI.skin.textField = textField;
+                GUI.skin.textArea = textArea;
+                GUI.skin.button = button;
+                GUI.skin.toggle = toggle;
+                GUI.skin.window = window;
+                GUI.skin.horizontalSlider = horizontalSlider;
+                GUI.skin.horizontalSliderThumb = horizontalSliderThumb;
+                GUI.skin.verticalSlider = verticalSlider;
+                GUI.skin.verticalSliderThumb = verticalSliderThumb;
+                GUI.skin.horizontalScrollbar = horizontalScrollbar;
+                GUI.skin.horizontalScrollbarThumb = horizontalScrollbarThumb;
+                GUI.skin.horizontalScrollbarLeftButton = horizontalScrollbarLeftButton;
+                GUI.skin.horizontalScrollbarRightButton = horizontalScrollbarRightButton;
+                GUI.skin.verticalScrollbar = verticalScrollbar;
+                GUI.skin.verticalScrollbarThumb = verticalScrollbarThumb;
+                GUI.skin.verticalScrollbarUpButton = verticalScrollbarUpButton;
+                GUI.skin.verticalScrollbarDownButton = verticalScrollbarDownButton;
+                GUI.skin.scrollView = scrollView;
+
+                GUI.skin.font = mainFont;
+            }
+        }
+        /// <summary>
+        /// Overrides the KSP skin.
+        /// </summary>
+        internal static void OverrideKSP()
+        {
+            HighLogic.Skin.box = box;
+            HighLogic.Skin.label = label;
+            HighLogic.Skin.textField = textField;
+            HighLogic.Skin.textArea = textArea;
+            HighLogic.Skin.button = button;
+            HighLogic.Skin.toggle = toggle;
+            HighLogic.Skin.window = window;
+            HighLogic.Skin.horizontalSlider = horizontalSlider;
+            HighLogic.Skin.horizontalSliderThumb = horizontalSliderThumb;
+            HighLogic.Skin.verticalSlider = verticalSlider;
+            HighLogic.Skin.verticalSliderThumb = verticalSliderThumb;
+            HighLogic.Skin.horizontalScrollbar = horizontalScrollbar;
+            HighLogic.Skin.horizontalScrollbarThumb = horizontalScrollbarThumb;
+            HighLogic.Skin.horizontalScrollbarLeftButton = horizontalScrollbarLeftButton;
+            HighLogic.Skin.horizontalScrollbarRightButton = horizontalScrollbarRightButton;
+            HighLogic.Skin.verticalScrollbar = verticalScrollbar;
+            HighLogic.Skin.verticalScrollbarThumb = verticalScrollbarThumb;
+            HighLogic.Skin.verticalScrollbarUpButton = verticalScrollbarUpButton;
+            HighLogic.Skin.verticalScrollbarDownButton = verticalScrollbarDownButton;
+            HighLogic.Skin.scrollView = scrollView;
+
+            HighLogic.Skin.font = mainFont;
+        }
+#endif
+
+    }
 }
 
