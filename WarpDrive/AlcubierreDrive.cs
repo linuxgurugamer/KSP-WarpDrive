@@ -110,8 +110,7 @@ namespace WarpDrive
 			if (!isSlave) {
 				alcubierreDrives = part.vessel.FindPartModulesImplementing<AlcubierreDrive> ();
 				foreach (var drive in alcubierreDrives) {
-					var driveId = drive.GetInstanceID ();
-					if (driveId != instanceId)
+					if (drive.GetInstanceID() != instanceId)
 						drive.isSlave = true;
 				}
 			}

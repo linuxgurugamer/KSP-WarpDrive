@@ -1,0 +1,21 @@
+{
+  "NAME": "WarpDrive",
+  "URL": "http://ksp.spacetux.net/avc/WarpDrive",
+  "DOWNLOAD": "https://github.com/linuxgurugamer/WarpDrive/releases",
+  "GITHUB": {
+    "USERNAME": "linuxgurugamer",
+    "REPOSITORY": "WarpDrive"
+  },
+  "VERSION": {
+    "MAJOR": 0,
+    "MINOR": 9,
+    "PATCH": 3,
+    "BUILD": 0
+  },
+  "KSP_VERSION_MIN": {
+    "MAJOR": 1,
+    "MINOR": 8,
+    "PATCH": 0
+  }
+}
+

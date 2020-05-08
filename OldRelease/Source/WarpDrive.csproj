@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <ProjectGuid>{36B18F2D-CEC0-44C2-9608-F772D19235E8}</ProjectGuid>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <OutputType>Library</OutputType>
+    <AssemblyName>WarpDrive</AssemblyName>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Platform)' == 'AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <OutputPath>bin\Debug\</OutputPath>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <OutputPath>bin\Release\</OutputPath>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Assembly-CSharp">
+      <HintPath>R:\KSP_1.9.1_dev\KSP_x64_Data\Managed\Assembly-CSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine">
+      <HintPath>R:\KSP_1.9.1_dev\KSP_x64_Data\Managed\UnityEngine.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Core">
+      <HintPath>C:\WINDOWS\assembly\GAC_MSIL\System.Core\3.5.0.0__b77a5c561934e089\System.Core.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="WarpDrive\AlcubierreDrive.cs" />
+    <Compile Include="WarpDrive\Button.cs" />
+    <Compile Include="WarpDrive\ButtonTypes.cs" />
+    <Compile Include="WarpDrive\ClickEvent.cs" />
+    <Compile Include="WarpDrive\ClickHandler.cs" />
+    <Compile Include="WarpDrive\Constants.cs" />
+    <Compile Include="WarpDrive\Core.cs" />
+    <Compile Include="WarpDrive\GameScenesVisibility.cs" />
+    <Compile Include="WarpDrive\IButton.cs" />
+    <Compile Include="WarpDrive\IDrawable.cs" />
+    <Compile Include="WarpDrive\IToolbarManager.cs" />
+    <Compile Include="WarpDrive\IVisibility.cs" />
+    <Compile Include="WarpDrive\Layout.cs" />
+    <Compile Include="WarpDrive\MouseEnterEvent.cs" />
+    <Compile Include="WarpDrive\MouseEnterHandler.cs" />
+    <Compile Include="WarpDrive\MouseLeaveEvent.cs" />
+    <Compile Include="WarpDrive\MouseLeaveHandler.cs" />
+    <Compile Include="WarpDrive\MouseMoveEvent.cs" />
+    <Compile Include="WarpDrive\Offsets.cs" />
+    <Compile Include="WarpDrive\Palette.cs" />
+    <Compile Include="WarpDrive\PopupMenuDrawable.cs" />
+    <Compile Include="WarpDrive\Styles.cs" />
+    <Compile Include="WarpDrive\ToolbarManager.cs" />
+    <Compile Include="WarpDrive\ToolbarTypes.cs" />
+    <Compile Include="WarpDrive\Utils.cs" />
+    <Compile Include="WarpDrive\WarpFX.cs" />
+    <Compile Include="WarpDrive\Warpotron9000.cs" />
+    <Compile Include="WarpDrive\WarpPlane.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>
