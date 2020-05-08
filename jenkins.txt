@@ -31,7 +31,7 @@
 1:WarpDrive, WarpDrive.version, KSP-WarpDrive
 
 # 2:PROJNAME, PROJFILE, VERSIONFILE, PLUGINSFOLDER
-2:WarpDrive,WarpDrive/WarpDrive.csproj,WarpDrive.version,GameData/WarpDrive/Plugins
+2:WarpDrive,Source/WarpDrive.csproj,WarpDrive.version,GameData/WarpDrive/Plugins
 
 # 3:SOURCEFILE, DESTDIR
 3:WarpDrive.version,GameData/WarpDrive
