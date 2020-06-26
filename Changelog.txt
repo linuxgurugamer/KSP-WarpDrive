@@ -1,5 +1,8 @@
 Changelog
 
+0.9.4
+	Changed module name to StandAloneAlcubierreDrive to avoid conflicts with  KSPIE 
+
 0.9.3
 	Added support for Clickthroughblocker
 	Added support for the ToolbarController

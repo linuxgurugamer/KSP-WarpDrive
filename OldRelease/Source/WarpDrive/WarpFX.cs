@@ -20,7 +20,7 @@ namespace WarpDrive
 
 		private FlightCamera camera;
 
-		internal WarpFX(AlcubierreDrive drive)
+		internal WarpFX(StandAloneAlcubierreDrive drive)
 		{
 			camera = FlightCamera.fetch;
 			CreateTrail(drive);
@@ -52,7 +52,7 @@ namespace WarpDrive
 			camera.SetFoV(camera.fovDefault);
 		}
 
-		private void CreateTrail(AlcubierreDrive drive)
+		private void CreateTrail(StandAloneAlcubierreDrive drive)
 		{
 			warpTrailInner = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
 			warpTrailInner.GetComponent<Collider>().enabled = false;
@@ -78,7 +78,7 @@ namespace WarpDrive
 			warpTrailOuter.GetComponent<Renderer>().enabled = false;
 		}
 
-		private void CreatePlanes(AlcubierreDrive drive)
+		private void CreatePlanes(StandAloneAlcubierreDrive drive)
 		{
 			planesCore = new GameObject();
 			planesCore.transform.parent = camera.transform;

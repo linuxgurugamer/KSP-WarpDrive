@@ -24,7 +24,7 @@ namespace WarpDrive
 
         private PluginConfiguration config;
         private bool gamePaused;
-        private AlcubierreDrive masterDrive;
+        private StandAloneAlcubierreDrive masterDrive;
 
         // GUI stuff
         ToolbarControl toolbarControl;
@@ -148,7 +148,7 @@ namespace WarpDrive
 
         public void onVesselChange(Vessel vessel)
         {
-            masterDrive = vessel.FindPartModulesImplementing<AlcubierreDrive>().Find(t => !t.isSlave);
+            masterDrive = vessel.FindPartModulesImplementing<StandAloneAlcubierreDrive>().Find(t => !t.isSlave);
         }
 
         public void onAppTrue()

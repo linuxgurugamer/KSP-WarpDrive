@@ -13,7 +13,7 @@ namespace WarpDrive
 
 		private bool gamePaused;
 
-		private AlcubierreDrive masterDrive;
+		private StandAloneAlcubierreDrive masterDrive;
 
 		private ApplicationLauncherButton appLauncherButton;
 
@@ -133,7 +133,7 @@ namespace WarpDrive
 
 		public void onVesselChange(Vessel vessel)
 		{
-			masterDrive = vessel.FindPartModulesImplementing<AlcubierreDrive>().Find((AlcubierreDrive t) => !t.isSlave);
+			masterDrive = vessel.FindPartModulesImplementing<StandAloneAlcubierreDrive>().Find((StandAloneAlcubierreDrive t) => !t.isSlave);
 		}
 
 		public void onAppTrue()

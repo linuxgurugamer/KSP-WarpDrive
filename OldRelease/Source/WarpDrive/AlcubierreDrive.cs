@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace WarpDrive
 {
-	public class AlcubierreDrive : PartModule
+	public class StandAloneAlcubierreDrive : PartModule
 	{
 		[KSPField(isPersistant = true)]
 		internal bool inWarp;
@@ -40,7 +40,7 @@ namespace WarpDrive
 
 		private PartResourceDefinition ecResource;
 
-		private List<AlcubierreDrive> alcubierreDrives;
+		private List<StandAloneAlcubierreDrive> alcubierreDrives;
 
 		private WarpFX fx;
 
@@ -147,8 +147,8 @@ namespace WarpDrive
 				previousFactor = currentFactor;
 				if (!isSlave)
 				{
-					alcubierreDrives = base.part.vessel.FindPartModulesImplementing<AlcubierreDrive>();
-					foreach (AlcubierreDrive alcubierreDrife in alcubierreDrives)
+					alcubierreDrives = base.part.vessel.FindPartModulesImplementing<StandAloneAlcubierreDrive>();
+					foreach (StandAloneAlcubierreDrive alcubierreDrife in alcubierreDrives)
 					{
 						if (alcubierreDrife.GetInstanceID() != instanceId)
 						{
