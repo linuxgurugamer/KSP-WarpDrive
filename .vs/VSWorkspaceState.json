@@ -4,9 +4,8 @@
     "\\GameData",
     "\\GameData\\WarpDrive",
     "\\GameData\\WarpDrive\\WarpDrive",
-    "\\OldRelease\\Source",
-    "\\OldRelease\\Source\\WarpDrive"
+    "\\Source"
   ],
-  "SelectedNode": "\\Source",
+  "SelectedNode": "\\GameData\\WarpDrive\\WarpDrive\\WarpDrive.cfg",
   "PreviewInSolutionExplorer": false
 }
