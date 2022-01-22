@@ -385,7 +385,7 @@ namespace WarpDrive
 		public void StartContainment() {
 			double ecProduction = Utils.CalculateSolarPower (vessel) + Utils.CalculateOtherPower (vessel);
 			if (ecProduction < 100) {
-				ScreenMessages.PostScreenMessage ("Not enough power to create stable containment field!", 7.0f);
+				ScreenMessages.PostScreenMessage ("Not enough EC production to create stable containment field!", 7.0f);
 				return;
 			}
 			containmentField = true;
