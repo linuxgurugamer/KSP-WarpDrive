@@ -1,5 +1,9 @@
 Changelog
 
+0.9.4.2
+	Thanks to user @yalov for these changes:
+		Update Message for EC production
+		Add instruction to desc
 0.9.4.1
 	Added AssemblyFileVersion
 	Updated version file for 1.12
