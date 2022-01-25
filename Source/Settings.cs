@@ -39,6 +39,10 @@ namespace WarpDrive
             toolTip = "Use a modern, flat skin")]
         public bool flatSkin = false;
 
+        [GameParameters.CustomParameterUI("tooltip",
+    toolTip = "tooltip")]
+        public bool tooltip = true;
+
         //public enum PostPlacementMode { reload, noreload, jumpto };
 
 

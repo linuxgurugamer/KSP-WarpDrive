@@ -16,11 +16,14 @@ namespace WarpDrive
 		/// </summary>
 		/// <param name="text">Text.</param>
 		/// <param name="options">Options.</param>
-		public static void Label(string text, params GUILayoutOption[] options) {
+		public static void Label(string text, string tooltip = "", params GUILayoutOption[] options) {
 			Styles.label.normal.textColor = Color.white;
 			Styles.label.alignment = TextAnchor.MiddleLeft;
 			Styles.label.stretchWidth = false;
-			GUILayout.Label (text, Styles.label, options);
+
+			//GUILayout.Label (text, Styles.label, options);
+			var cont = new GUIContent(text, tooltip);
+			GUILayout.Label(cont, Styles.label, options);
 		}
 
 		/// <summary>
@@ -29,11 +32,14 @@ namespace WarpDrive
 		/// <param name="text">Text.</param>
 		/// <param name="color">Color.</param>
 		/// <param name="options">Options.</param>
-		public static void Label(string text, Color color, params GUILayoutOption[] options) {
+		public static void Label(string text, Color color, string tooltip = "", params GUILayoutOption[] options) {
 			Styles.label.normal.textColor = color;
 			Styles.label.alignment = TextAnchor.MiddleLeft;
 			Styles.label.stretchWidth = false;
-			GUILayout.Label (text, Styles.label, options);
+
+			//GUILayout.Label (text, Styles.label, options);
+			var cont = new GUIContent(text, tooltip);
+			GUILayout.Label(cont, Styles.label, options);
 		}
 
 		/// <summary>
@@ -41,11 +47,14 @@ namespace WarpDrive
 		/// </summary>
 		/// <param name="text">Text.</param>
 		/// <param name="options">Options.</param>
-		public static void LabelCentered(string text, params GUILayoutOption[] options) {
+		public static void LabelCentered(string text, string tooltip = "", params GUILayoutOption[] options) {
 			Styles.label.normal.textColor = Color.white;
 			Styles.label.alignment = TextAnchor.MiddleCenter;
 			Styles.label.stretchWidth = true;
-			GUILayout.Label (text, Styles.label, options);
+
+			//GUILayout.Label (text, Styles.label, options);
+			var cont = new GUIContent(text, tooltip);
+			GUILayout.Label(cont, Styles.label, options);
 		}
 
 		/// <summary>
@@ -54,11 +63,14 @@ namespace WarpDrive
 		/// <param name="text">Text.</param>
 		/// <param name="color">Color.</param>
 		/// <param name="options">Options.</param>
-		public static void LabelCentered(string text, Color color, params GUILayoutOption[] options) {
+		public static void LabelCentered(string text, Color color, string tooltip = "", params GUILayoutOption[] options) {
 			Styles.label.normal.textColor = color;
 			Styles.label.alignment = TextAnchor.MiddleCenter;
 			Styles.label.stretchWidth = true;
-			GUILayout.Label (text, Styles.label, options);
+
+			//GUILayout.Label (text, Styles.label, options);
+			var cont = new GUIContent(text, tooltip);
+			GUILayout.Label(cont, Styles.label, options);
 		}
 
 		/// <summary>
@@ -143,10 +155,10 @@ namespace WarpDrive
 		/// </summary>
 		/// <param name="label">Label.</param>
 		/// <param name="text">Text.</param>
-		public static void LabelAndText(string label, string text) {
+		public static void LabelAndText(string label, string tooltip, string text ) {
 			GUILayout.BeginHorizontal ();
-			Label (label + ": ", Palette.blue);
-			Label (text, Color.white);
+			Label (label + ": ", Palette.blue, tooltip);
+			Label (text, Color.white, "");
 			GUILayout.EndHorizontal ();
 		}
 
