@@ -6,54 +6,23 @@
 using System;
 using UnityEngine;
 using ClickThroughFix;
+using KSP.Localization;
 
 namespace WarpDrive
 {
 	public class Layout
 	{
 		/// <summary>
-		/// Styled label with white text color.
-		/// </summary>
-		/// <param name="text">Text.</param>
-		/// <param name="options">Options.</param>
-		public static void Label(string text, string tooltip = "", params GUILayoutOption[] options) {
-			Styles.label.normal.textColor = Color.white;
-			Styles.label.alignment = TextAnchor.MiddleLeft;
-			Styles.label.stretchWidth = false;
-
-			//GUILayout.Label (text, Styles.label, options);
-			var cont = new GUIContent(text, tooltip);
-			GUILayout.Label(cont, Styles.label, options);
-		}
-
-		/// <summary>
 		/// Styled label with text color accepted as argument.
 		/// </summary>
 		/// <param name="text">Text.</param>
 		/// <param name="color">Color.</param>
 		/// <param name="options">Options.</param>
-		public static void Label(string text, Color color, string tooltip = "", params GUILayoutOption[] options) {
-			Styles.label.normal.textColor = color;
+		public static void Label(string text, string tooltip = "", Color? color = null, params GUILayoutOption[] options) {
+			Styles.label.normal.textColor = color ?? Color.white;
 			Styles.label.alignment = TextAnchor.MiddleLeft;
 			Styles.label.stretchWidth = false;
-
-			//GUILayout.Label (text, Styles.label, options);
-			var cont = new GUIContent(text, tooltip);
-			GUILayout.Label(cont, Styles.label, options);
-		}
-
-		/// <summary>
-		/// Styled label with center text alignment
-		/// </summary>
-		/// <param name="text">Text.</param>
-		/// <param name="options">Options.</param>
-		public static void LabelCentered(string text, string tooltip = "", params GUILayoutOption[] options) {
-			Styles.label.normal.textColor = Color.white;
-			Styles.label.alignment = TextAnchor.MiddleCenter;
-			Styles.label.stretchWidth = true;
-
-			//GUILayout.Label (text, Styles.label, options);
-			var cont = new GUIContent(text, tooltip);
+			var cont = new GUIContent(Localizer.Format(text), Localizer.Format(tooltip));
 			GUILayout.Label(cont, Styles.label, options);
 		}
 
@@ -63,26 +32,12 @@ namespace WarpDrive
 		/// <param name="text">Text.</param>
 		/// <param name="color">Color.</param>
 		/// <param name="options">Options.</param>
-		public static void LabelCentered(string text, Color color, string tooltip = "", params GUILayoutOption[] options) {
-			Styles.label.normal.textColor = color;
+		public static void LabelCentered(string text, string tooltip = "", Color? color = null, params GUILayoutOption[] options) {
+			Styles.label.normal.textColor = color ?? Color.white;
 			Styles.label.alignment = TextAnchor.MiddleCenter;
 			Styles.label.stretchWidth = true;
-
-			//GUILayout.Label (text, Styles.label, options);
-			var cont = new GUIContent(text, tooltip);
+			var cont = new GUIContent(Localizer.Format(text), Localizer.Format(tooltip));
 			GUILayout.Label(cont, Styles.label, options);
-		}
-
-		/// <summary>
-		/// Styled label with text aligned to the right
-		/// </summary>
-		/// <param name="text">Text.</param>
-		/// <param name="options">Options.</param>
-		public static void LabelRight(string text, params GUILayoutOption[] options) {
-			Styles.label.normal.textColor = Color.white;
-			Styles.label.alignment = TextAnchor.MiddleRight;
-			Styles.label.stretchWidth = false;
-			GUILayout.Label (text, Styles.label, options);
 		}
 
 		/// <summary>
@@ -91,24 +46,14 @@ namespace WarpDrive
 		/// <param name="text">Text.</param>
 		/// <param name="color">Color.</param>
 		/// <param name="options">Options.</param>
-		public static void LabelRight(string text, Color color, params GUILayoutOption[] options) {
-			Styles.label.normal.textColor = color;
+		public static void LabelRight(string text, string tooltip = "", Color? color = null, params GUILayoutOption[] options) {
+			Styles.label.normal.textColor = color ?? Color.white;
 			Styles.label.alignment = TextAnchor.MiddleRight;
 			Styles.label.stretchWidth = false;
-			GUILayout.Label (text, Styles.label, options);
+			var cont = new GUIContent(Localizer.Format(text), Localizer.Format(tooltip));
+			GUILayout.Label(cont, Styles.label, options);
 		}
 
-		/// <summary>
-		/// Styled button with white text color
-		/// </summary>
-		/// <param name="text">Text.</param>
-		/// <param name="options">Options.</param>
-		public static bool Button(string text, params GUILayoutOption[] options) {
-			Styles.button.normal.textColor = Color.white;
-			Styles.button.alignment = TextAnchor.MiddleCenter;
-			Styles.button.stretchWidth = true;
-			return GUILayout.Button (text, Styles.button, options);
-		}
 
 		/// <summary>
 		/// Styled button with text color accepted as argument.
@@ -116,24 +61,12 @@ namespace WarpDrive
 		/// <param name="text">Text.</param>
 		/// <param name="color">Color.</param>
 		/// <param name="options">Options.</param>
-		public static bool Button(string text, Color color, params GUILayoutOption[] options) {
-			Styles.button.normal.textColor = color;
+		public static bool Button(string text, string tooltip = "", Color? color = null, params GUILayoutOption[] options) {
+			Styles.button.normal.textColor = color ?? Color.white;
 			Styles.button.alignment = TextAnchor.MiddleCenter;
 			Styles.button.stretchWidth = true;
-			return GUILayout.Button (text, Styles.button, options);
-		}
-
-		/// <summary>
-		/// Styled button with text aligned to the left
-		/// </summary>
-		/// <returns><c>true</c>, if left was buttoned, <c>false</c> otherwise.</returns>
-		/// <param name="text">Text.</param>
-		/// <param name="options">Options.</param>
-		public static bool ButtonLeft(string text, params GUILayoutOption[] options) {
-			Styles.button.normal.textColor = Color.white;
-			Styles.button.alignment = TextAnchor.MiddleLeft;
-			Styles.button.stretchWidth = true;
-			return GUILayout.Button (text, Styles.button, options);
+			var content = new GUIContent(Localizer.Format(text), Localizer.Format(tooltip));
+			return GUILayout.Button(content, Styles.button, options);
 		}
 
 		/// <summary>
@@ -143,11 +76,12 @@ namespace WarpDrive
 		/// <param name="text">Text.</param>
 		/// <param name="color">Color.</param>
 		/// <param name="options">Options.</param>
-		public static bool ButtonLeft(string text, Color color, params GUILayoutOption[] options) {
-			Styles.button.normal.textColor = color;
+		public static bool ButtonLeft(string text, string tooltip = "", Color? color = null, params GUILayoutOption[] options) {
+			Styles.button.normal.textColor = color ?? Color.white;
 			Styles.button.alignment = TextAnchor.MiddleLeft;
 			Styles.button.stretchWidth = true;
-			return GUILayout.Button (text, Styles.button, options);
+			var content = new GUIContent(Localizer.Format(text), Localizer.Format(tooltip));
+			return GUILayout.Button(content, Styles.button, options);
 		}
 
 		/// <summary>
@@ -157,8 +91,8 @@ namespace WarpDrive
 		/// <param name="text">Text.</param>
 		public static void LabelAndText(string label, string tooltip, string text ) {
 			GUILayout.BeginHorizontal ();
-			Label (label + ": ", Palette.blue, tooltip);
-			Label (text, Color.white, "");
+			Label (Localizer.Format(label) + ": ", Localizer.Format(tooltip), Palette.blue);
+			Label (text);
 			GUILayout.EndHorizontal ();
 		}
 
@@ -201,7 +135,7 @@ namespace WarpDrive
 
 		public static bool Toggle(bool value, string text, params GUILayoutOption[] options) {
 			string prefix = value ? "● " : "○ ";
-			return GUILayout.Toggle (value, prefix + text, Styles.toggle, options);
+			return GUILayout.Toggle (value, prefix + Localizer.Format(text), Styles.toggle, options);
 		}
 
 		/// <summary>

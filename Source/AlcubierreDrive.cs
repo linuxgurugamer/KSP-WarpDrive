@@ -3,6 +3,8 @@ using KSP.Localization;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
+using static WarpDrive.Logging;
 
 namespace WarpDrive
 {
@@ -29,14 +31,18 @@ namespace WarpDrive
 		[KSPField(isPersistant = false)]
 		public float outerRadius;
 
-		[KSPField(isPersistant = false)]
-		public float drivePower;
+
 
 		//[KSPField(isPersistant = true)]
 		//public bool launched = false;		
 
 		private PartResourceDefinition emResource;
 		private PartResourceDefinition ecResource;
+
+		double defaultEMdecay = 100;
+		double defaultEMproduce = 0.01;
+		double defaultECconsume = 100;
+
 
 		private List<StandAloneAlcubierreDrive> alcubierreDrives;
 		private WarpFX fx;
@@ -47,6 +53,7 @@ namespace WarpDrive
 
 		internal bool isSlave;
 
+#if false
 		[KSPEvent(guiActive = true, active = false, guiName = "#WD_setMaster",
 			groupName = "WarpDrive", groupDisplayName = "WarpDrive")]
 		protected void setMaster()
@@ -55,50 +62,112 @@ namespace WarpDrive
 
 			foreach (var drive in alcubierreDrives)
 			{
-				//if (drive.GetInstanceID() != instanceId)
+				if (!drive.isSlave)
+				{
 					drive.isSlave = true;
 					drive.Events["setMaster"].active = true;
 					drive.UnloadMedia();
+				}
 			}
 
 			isSlave = false;
+			foreach (var f in Fields) { if (f.group.name == "WarpDrive") f.guiActive = true; }
 			Events["setMaster"].active = false;
 
 			if (HighLogic.LoadedSceneIsFlight)
 				OnStartPrivate();
 		}
 
-		[KSPField(isPersistant = false, guiActive = true, guiName = "#WD_upgradeStatus", groupName = "WarpDrive", groupDisplayName = "WarpDrive")]
-		internal string upgradeStatus;
-		[KSPField(isPersistant = false, guiActive = true, guiName = "#WD_currentGravityForce", groupName = "WarpDrive", groupDisplayName = "WarpDrive",
-			guiFormat = "F4", guiUnits = "#WD_Units_g")]
+		[KSPEvent(guiActive = true, active = false, guiName = "#WD_DecreaseFactor",
+	groupName = "WarpDrive", groupDisplayName = "WarpDrive")]
+		protected void DecreaseFactorEvent()
+		{
+			DecreaseFactor();
+		}
+
+		[KSPEvent(guiActive = true, active = false, guiName = "#WD_IncreaseFactor",
+groupName = "WarpDrive", groupDisplayName = "WarpDrive")]
+		protected void IncreaseFactorEvent()
+		{
+			IncreaseFactor();
+		}
+
+		[KSPEvent(guiActive = true, active = false, guiName = "#WD_ReduceFactor",
+groupName = "WarpDrive", groupDisplayName = "WarpDrive")]
+		protected void ReduceFactorEvent()
+		{
+			ReduceFactor();
+		}
+
+		[KSPEvent(guiActive = true, active = false, guiName = "#WD_ActivateWarpDrive",
+groupName = "WarpDrive", groupDisplayName = "WarpDrive")]
+		protected void ActivateWarpDriveEvent()
+		{
+			if (inWarp)
+			{
+				DeactivateWarpDrive();
+			}
+			else
+			{
+				ActivateWarpDrive();
+			}
+		}
+
+		[KSPEvent(guiActive = true, active = false, guiName = "#WD_ActivateContainmentField",
+groupName = "WarpDrive", groupDisplayName = "WarpDrive")]
+		protected void ActivateContainmentFieldEvent()
+		{
+			if (containmentField)
+			{
+				StopContainment();
+			}
+			else
+			{
+				StartContainment();
+			}
+		}
+
+#endif
+		[KSPField(isPersistant = false, guiActive = true, guiActiveEditor = true, guiName = "#WD_upgradeStatus", groupName = "WarpDrive", groupDisplayName = "WarpDrive")]
+		public string upgradeStatus;
+		[KSPField(isPersistant = false, guiActive = true, guiActiveEditor = true, guiName = "#WD_drivePower", groupName = "WarpDrive", groupDisplayName = "WarpDrive")]
+		public float drivePower;
+		[KSPField(isPersistant = false, guiActive = true, guiActiveEditor = true, guiName = "#WD_containmentFieldPower", groupName = "WarpDrive", groupDisplayName = "WarpDrive")]
+		public float containmentFieldPower;
+		
+
+		[KSPField(isPersistant = false, groupName = "WarpDrive", groupDisplayName = "WarpDrive",
+			guiFormat = "N4", guiUnits = "#WD_Units_g")]
 		internal double currentGravityForce;
-		[KSPField(isPersistant = false, guiActive = true, guiName = "#WD_speedLimit", groupName = "WarpDrive", groupDisplayName = "WarpDrive",
-			guiFormat = "F2", guiUnits = "#WD_Units_c")]
+		[KSPField(isPersistant = false, groupName = "WarpDrive", groupDisplayName = "WarpDrive",
+			guiFormat = "N2", guiUnits = "#WD_Units_c")]
 		internal double speedRestrictedbyG;
-		[KSPField(isPersistant = false, guiActive = true, guiName = "#WD_SelectedSpeed", groupName = "WarpDrive", groupDisplayName = "WarpDrive",
-			guiFormat = "F2", guiUnits = "#WD_Units_c")]
+		[KSPField(isPersistant = false,  groupName = "WarpDrive", groupDisplayName = "WarpDrive",
+			guiFormat = "N2", guiUnits = "#WD_Units_c")]
 		internal double currentSpeedFactor;
-		[KSPField(isPersistant = false, guiActive = true, guiName = "#WD_MaxAllowedSpeed", groupName = "WarpDrive", groupDisplayName = "WarpDrive",
-			guiFormat = "F2", guiUnits = "#WD_Units_c")]
+		[KSPField(isPersistant = false,  groupName = "WarpDrive", groupDisplayName = "WarpDrive",
+			guiFormat = "N2", guiUnits = "#WD_Units_c")]
 		internal double maximumSpeedFactor;
-		[KSPField(isPersistant = false, guiActive = true, guiName = "#WD_minimumRequiredExoticMatter", groupName = "WarpDrive", groupDisplayName = "WarpDrive",
-			guiFormat = "F2")]
+		[KSPField(isPersistant = false, groupName = "WarpDrive", groupDisplayName = "WarpDrive",
+			guiFormat = "N2")]
 		internal double minimalRequiredEM;
-		[KSPField(isPersistant = false, guiActive = true, guiName = "#WD_requiredForCurrentFactor", groupName = "WarpDrive", groupDisplayName = "WarpDrive",
-			guiFormat = "F2")]
+		[KSPField(isPersistant = false,  groupName = "WarpDrive", groupDisplayName = "WarpDrive",
+			guiFormat = "N2")]
 		internal double requiredForCurrentFactor;
-		[KSPField(isPersistant = false, guiActive = true, guiName = "#WD_requiredForMaximumFactor", groupName = "WarpDrive", groupDisplayName = "WarpDrive",
-			guiFormat = "F2")]
+		[KSPField(isPersistant = false, groupName = "WarpDrive", groupDisplayName = "WarpDrive",
+			guiFormat = "N2")]
 		internal double requiredForMaximumFactor;
-		[KSPField(isPersistant = false, guiActive = true, guiName = "#WD_drivesTotalPower", groupName = "WarpDrive", groupDisplayName = "WarpDrive",
-			guiFormat = "F2")]
+		[KSPField(isPersistant = false, groupName = "WarpDrive", groupDisplayName = "WarpDrive",
+			guiFormat = "N2")]
 		internal double drivesTotalPower;
-		[KSPField(isPersistant = false, guiActive = true, guiName = "#WD_VesselTotalMass", groupName = "WarpDrive", groupDisplayName = "WarpDrive",
-			guiFormat = "F2", guiUnits = "#WD_Units_t")]
+		[KSPField(isPersistant = false, groupName = "WarpDrive", groupDisplayName = "WarpDrive",
+			guiFormat = "N2")]
+		internal double containmentFieldPowerMax;
+		[KSPField(isPersistant = false, groupName = "WarpDrive", groupDisplayName = "WarpDrive",
+			guiFormat = "N2", guiUnits = "#WD_Units_t")]
 		internal double vesselTotalMass;
-		[KSPField(isPersistant = false, guiActive = true, guiName = "#WD_drivesEfficiencyRatio", groupName = "WarpDrive", groupDisplayName = "WarpDrive",
-			guiFormat = "F2")]
+		[KSPField(isPersistant = false, groupName = "WarpDrive", groupDisplayName = "WarpDrive",
+			guiFormat = "N2")]
 		internal double drivesEfficiency;
 
 
@@ -110,8 +179,6 @@ namespace WarpDrive
 		private Vector3d previousPartHeading;
 
 		public double[] warpFactors = { 0.01, 0.016, 0.025, 0.04, 0.063, 0.1, 0.16, 0.25, 0.40, 0.63, 1.0, 1.6, 2.5, 4.0, 6.3, 10, 16, 25, 40, 63, 100, 160, 250, 400, 630, 1000 };
-		// 10 < 1
-		// 15 > 1
 		// 10 + 1 + 15 = 26
 		public int lowEnergyFactor;
 		public int maximumFactor;
@@ -125,27 +192,23 @@ namespace WarpDrive
 		private AudioSource alarmSound;
 		private AudioSource warpSound;
 
-
-
 		public override void OnStart(PartModule.StartState state) {
+
+			LogDebug("upgradeStatus", upgradeStatus);
+
 			if (state == StartState.Editor)
 				return;
 
-			OnStartPrivate();
+			Init();
 		}
 
-		private void OnStartPrivate()
+		private void Init()
 		{
+			LogDebug("Init()");
 			emResource = PartResourceLibrary.Instance.GetDefinition("ExoticMatter");
 			ecResource = PartResourceLibrary.Instance.GetDefinition("ElectricCharge");
 
 			instanceId = GetInstanceID();
-
-			// upgradedTitle
-
-			//if (!launched) {
-			//	launched = true;
-			//}
 
 			lowEnergyFactor = warpFactors.IndexOf(1.0f);
 			if (currentFactor == -1)
@@ -168,10 +231,10 @@ namespace WarpDrive
 			}
 
 			if (isSlave)
+			{
+				LogDebug("Init(), the drive is slave, stop");
 				return;
-
-
-			
+			}
 
 			fx = new WarpFX(this);
 			if (inWarp)
@@ -200,6 +263,10 @@ namespace WarpDrive
 			{
 				warpSound.Play();
 			}
+
+			UpdateMasterEventsGUI();
+
+			LogDebug("Init() End");
 		}
 
 		public void onLevelWasLoaded(GameScenes gameScene) {
@@ -224,7 +291,14 @@ namespace WarpDrive
 			if (isSlave || HighLogic.LoadedSceneIsEditor)
 				return;
 
+			containmentFieldPowerMax = alcubierreDrives.Max(z => z.containmentFieldPower);
+			drivesTotalPower = alcubierreDrives.Sum(z => z.drivePower);
+			vesselTotalMass = vessel.totalMass;
+			drivesEfficiency = drivesTotalPower / vessel.totalMass;
+			minimalRequiredEM = 100 * vessel.totalMass / drivesEfficiency;
+
 			currentGravityForce = FlightGlobals.getGeeForceAtPosition(vessel.GetWorldPos3D()).magnitude;
+
 			speedRestrictedbyG = vessel.mainBody.flightGlobalsIndex != 0
 				? 1 / (Math.Max(currentGravityForce - 0.006, 0.001) * 10)
 				: 1 / currentGravityForce;
@@ -234,18 +308,9 @@ namespace WarpDrive
 
 			maximumFactor = GetMaximumFactor(speedRestrictedbyG);
 
-			drivesTotalPower = 0;
-			for (int i = 0; i < alcubierreDrives.Count; i++)
-				drivesTotalPower += drivePower;
-			
-			drivesEfficiency = drivesTotalPower / vessel.totalMass;
-
 			currentSpeedFactor = warpFactors[currentFactor];
 			maximumSpeedFactor = warpFactors[maximumFactor];
-			vesselTotalMass = vessel.totalMass;
 		
-			minimalRequiredEM = 100 * vessel.totalMass / drivesEfficiency;
-
 			requiredForCurrentFactor = GetExoticMatterRequired(warpFactors[currentFactor]);
 			requiredForMaximumFactor = GetExoticMatterRequired(warpFactors[maximumFactor]);
 
@@ -275,19 +340,19 @@ namespace WarpDrive
 
 			// Decay exotic matter
 			if (!containmentField) {
-				vessel.RequestResource (part, emResource.id, 100 * timeDelta, true);
+				vessel.RequestResource (part, emResource.id, containmentFieldPowerMax * defaultEMdecay * timeDelta, true);
 				return;
 			}
 
-			double ecReturned = vessel.RequestResource (part, ecResource.id, 100 * timeDelta, true);
+			double ecReturned = vessel.RequestResource (part, ecResource.id, containmentFieldPowerMax * defaultECconsume * timeDelta, true);
 
 			// No EC, shutdown containment field
 			if (ecReturned == 0) {
-				ScreenMessages.PostScreenMessage ("Not enough EC for stable containment field!", 7.0f);
-				ScreenMessages.PostScreenMessage ("Containment field is off, EM will decay!", 7.0f);
+				ScreenMessages.PostScreenMessage (Localizer.Format("#WD_ContainmentFieldNotEnoughECtoStable"), 7.0f);
+				ScreenMessages.PostScreenMessage (Localizer.Format("#WD_ContainmentFieldOff"), 7.0f);
 				StopContainment ();
 			} else
-				vessel.RequestResource (part, emResource.id, -0.01 * timeDelta, true);
+				vessel.RequestResource (part, emResource.id, -1 * containmentFieldPowerMax * defaultEMproduce * timeDelta, true);
 		}
 
 		public void UpdateWarpSpeed() {
@@ -296,7 +361,7 @@ namespace WarpDrive
 			// Check this out
 			if (this.vessel.altitude < this.vessel.mainBody.atmosphereDepth * 3) {
 				if (vesselWasInOuterspace) {
-					ScreenMessages.PostScreenMessage ("Atmosphere is too close! Dropping out of warp!", 7.0f);
+					ScreenMessages.PostScreenMessage (Localizer.Format("#WD_AtmOutOfWarp"), 7.0f);
 					alarm = true;
 					DeactivateWarpDrive ();
 					return;
@@ -319,12 +384,12 @@ namespace WarpDrive
 			if (gravityDisbalance) {
 				currentFactor = maximumFactor;
 				if (currentFactor < lowEnergyFactor) {
-					ScreenMessages.PostScreenMessage ("Gravity too strong, dropping out of warp!", 7.0f);
+					ScreenMessages.PostScreenMessage (Localizer.Format("#WD_GravityOutOfWarp"), 7.0f);
 					alarm = true;
 					DeactivateWarpDrive ();
 					return;
 				}
-				ScreenMessages.PostScreenMessage ("Gravity pull increased, speed dropped down!", 7.0f);
+				ScreenMessages.PostScreenMessage (Localizer.Format("#WD_GravitySpeedDroppedDown"), 7.0f);
 			}
 
 			if (gravityDisbalance || headingChanged || factorChanged) {
@@ -362,50 +427,51 @@ namespace WarpDrive
 
 			if (availableExoticMatter < emDiff)
 			{
-				ScreenMessages.PostScreenMessage("Not enough Exotic Matter to change warp factor!", 7.0f);
+				ScreenMessages.PostScreenMessage(Localizer.Format("#WD_WarpNotEnoughEMToChange"), 7.0f);
 				return false;
 			}
 			if (emDiff > 0) {
 				part.RequestResource ("ExoticMatter", emDiff);
-				ScreenMessages.PostScreenMessage (emDiff.ToString ("F3") + " Exotic Matter consumed!", 7.0f);
+				ScreenMessages.PostScreenMessage (Localizer.Format("#WD_EMConsumed", emDiff.ToString ("F2")), 7.0f);
 			}
 			return true;
 		}
 
-		public void ActivateWarpDrive() {
+		public bool ActivateWarpDrive() {
 			if (inWarp)
-				return;
+				return false;
 
 			if (this.vessel.altitude <= getMaxAtmosphericAltitude(this.vessel.mainBody) &&
 				this.vessel.mainBody.flightGlobalsIndex != 0)
 			{
-				ScreenMessages.PostScreenMessage ("Cannot activate warp drive within the atmosphere!", 7.0f);
-				return;
+				ScreenMessages.PostScreenMessage (Localizer.Format("#WD_AtmCannotWarp"), 7.0f);
+				return false;
 			}
 
 			if (drivesEfficiency < 1)
 			{
-				ScreenMessages.PostScreenMessage ("Not enough drives power to initiate warp!", 7.0f);
-				return;
+				ScreenMessages.PostScreenMessage (Localizer.Format("#WD_WarpNotEnoughDrivesPower"), 7.0f);
+				return false;
 			}
-
-			double availableExoticMatter;
-			double maxExoticMatter;
 
 			part.GetConnectedResourceTotals
 			(
 				emResource.id,
-				out availableExoticMatter,
-				out maxExoticMatter
+				out double availableExoticMatter,
+				out double maxExoticMatter
 			);
 
 			if (availableExoticMatter < requiredForCurrentFactor)
 			{
-				ScreenMessages.PostScreenMessage("Not enough Exotic Matter to initiate warp!", 7.0f);
-				return;
+				ScreenMessages.PostScreenMessage(Localizer.Format("#WD_WarpNotEnoughEM"), 7.0f);
+				return false;
 			}
 
 			InitiateWarp ();
+
+			ToggleDriveSetMasterEvent(false);
+			UpdateMasterEventsGUI();
+			return true;
 		}
 
 		private void InitiateWarp() {
@@ -429,9 +495,9 @@ namespace WarpDrive
 			warpSound.Play ();
 		}
 
-		public void DeactivateWarpDrive() {
+		public bool DeactivateWarpDrive() {
 			if (!inWarp)
-				return;
+				return false;
 
 			vessel.GoOnRails();
 			vessel.orbit.UpdateFromStateVectors(vessel.orbit.pos, vessel.orbit.vel - warpVector, vessel.orbit.referenceBody, Planetarium.GetUniversalTime());
@@ -441,24 +507,83 @@ namespace WarpDrive
 			warpSound.Stop ();
 			if (containmentField)
 				containmentSound.Play ();
+
+			ToggleDriveSetMasterEvent(true);
+			UpdateMasterEventsGUI();
+			return true;
 		}
 
-		public void StartContainment() {
+		public bool StartContainment() {
 			double ecProduction = Utils.CalculateSolarPower (vessel) + Utils.CalculateOtherPower (vessel);
-			if (ecProduction < 100) {
-				ScreenMessages.PostScreenMessage ("Not enough EC production to create stable containment field!", 7.0f);
-				return;
+			if (ecProduction < containmentFieldPowerMax * 100) {
+				ScreenMessages.PostScreenMessage (
+					Localizer.Format("#WD_ContainmentFieldNotEnoughECtoCreate", (containmentFieldPowerMax * 100).ToString("F0")), 
+					7.0f);
+				return false;
 			}
 			containmentField = true;
 			lastTime = Planetarium.GetUniversalTime ();
 			containmentSound.Play ();
 			containmentSound.loop = true;
+
+			ToggleDriveSetMasterEvent(false);
+			UpdateMasterEventsGUI();
+
+			return true;
 		}
 
-		public void StopContainment() {
+		public bool StopContainment() {
+			if (containmentField == false)
+				return false;
+
 			containmentField = false;
 			containmentSound.Stop ();
-			ScreenMessages.PostScreenMessage ("Containment field is off, EM will decay!", 7.0f);
+			ScreenMessages.PostScreenMessage (Localizer.Format("#WD_ContainmentFieldOff"), 7.0f);
+
+			ToggleDriveSetMasterEvent(true);
+			UpdateMasterEventsGUI();
+			return true;
+		}
+
+		/// <summary>
+		/// enable/disable "Set Master" button for all slave drives
+		/// </summary>
+		/// <param name="active"></param> true - enable, false - disable
+		/// 
+		private void ToggleDriveSetMasterEvent(bool active)
+		{
+			if (alcubierreDrives != null)
+			{
+				foreach (var drive in alcubierreDrives)
+				{
+					if (drive.GetInstanceID() != instanceId)
+					{
+						drive.Events["setMaster"].active = active;
+					}
+				}
+			}
+		}
+
+		static bool a = false;
+		private void UpdateMasterEventsGUI()
+		{
+#if false
+			if (containmentField)
+				Events["ActivateContainmentFieldEvent"].guiName = "#WD_DeactivateContainmentField";
+			else
+				Events["ActivateContainmentFieldEvent"].guiName = "#WD_ActivateContainmentField";
+
+			if (inWarp)
+				Events["ActivateWarpDriveEvent"].guiName = "#WD_DeactivateWarpDrive";
+			else
+				Events["ActivateWarpDriveEvent"].guiName = "#WD_ActivateWarpDrive";
+
+			Events["ActivateContainmentFieldEvent"].active = true;
+			Events["ActivateWarpDriveEvent"].active = true;
+			Events["DecreaseFactorEvent"].active = true;
+			Events["IncreaseFactorEvent"].active = true;
+			Events["ReduceFactorEvent"].active = true;
+#endif
 		}
 
 		public void ReduceFactor()
@@ -555,30 +680,26 @@ namespace WarpDrive
 			// this method suppouse to free memory on the old master module
 			// if a master module is changed
 
+			containmentSound?.clip?.UnloadAudioData();
+			warpSound?.clip?.UnloadAudioData();
+			alarmSound?.clip?.UnloadAudioData();
+
+			Destroy(containmentSound);
+			Destroy(warpSound);
+			Destroy(alarmSound);
+
 			containmentSound = null;
 			warpSound = null;
 			alarmSound = null;
 		}
 
 
-
-		
-		public override string GetInfo()
-		{
-			string text = "";
-
-			text += "Containment Field Activation Condition: " + "+100 EC/s" + "\n";
-			text += "Active Containment Field:";
-			text += "\tConsumes: " + "100 EC/s" + "\n";
-			text += "\tProduses: " + "0.01 EM/s" + "\n";
-
-			text += "Upgrade Status: " + upgradeStatus + "\n";
-			text += "Drive Power: " + drivePower + "\n";
-
-
-			return text;
-
-		}
+		public override string GetInfo() =>
+			Localizer.Format("#WD_Info") +
+			Localizer.Format("#WD_InfoStatus", upgradeStatus) +
+			Localizer.Format("#WD_InfoDrivePower", drivePower) +
+			Localizer.Format("#WD_InfoContainmentFieldPower", containmentFieldPower) +
+			Localizer.Format("#WD_InfoContainmentField", containmentFieldPower * defaultECconsume, containmentFieldPower * defaultEMproduce);
 
 		public override string GetModuleDisplayName() => Localizer.Format("#WD_ModuleStandAloneAlcubierreDriveDisplayName");
 
@@ -601,15 +722,6 @@ namespace WarpDrive
 		/// </summary>
 		/// <returns></returns>
 		public string GetPrimaryField() => null;
-
-
-
-
-
-
-
-
-
 
 	}
 }

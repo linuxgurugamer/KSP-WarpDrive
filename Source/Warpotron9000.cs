@@ -4,6 +4,9 @@ using UnityEngine;
 using KSP.UI.Screens;
 using KSP.IO;
 using ToolbarControl_NS;
+using KSP.Localization;
+using System.Linq;
+using Smooth.Compare.Utilities;
 
 namespace WarpDrive
 {
@@ -73,7 +76,7 @@ namespace WarpDrive
             //useToolbar = config.GetValue<bool>("useToolbar", false);
             maximized = config.GetValue<bool>("maximized", false);
 
-            GameEvents.onGUIApplicationLauncherReady.Add(onGUIApplicationLauncherReady);
+            //GameEvents.onGUIApplicationLauncherReady.Add(onGUIApplicationLauncherReady);
             GameEvents.onLevelWasLoaded.Add(onLevelWasLoaded);
             GameEvents.onVesselChange.Add(onVesselChange);
             GameEvents.onHideUI.Add(onHideUI);
@@ -87,7 +90,7 @@ namespace WarpDrive
         /// </summary>
         public void OnDestroy()
         {
-            GameEvents.onGUIApplicationLauncherReady.Remove(onGUIApplicationLauncherReady);
+            //GameEvents.onGUIApplicationLauncherReady.Remove(onGUIApplicationLauncherReady);
             GameEvents.onLevelWasLoaded.Remove(onLevelWasLoaded);
             GameEvents.onVesselChange.Remove(onVesselChange);
             GameEvents.onHideUI.Remove(onHideUI);
@@ -117,10 +120,10 @@ namespace WarpDrive
             InputLockManager.RemoveControlLock(this.name);
         }
 
-        public void onGUIApplicationLauncherReady()
-        {
-            CreateLauncher();
-        }
+        //public void onGUIApplicationLauncherReady()
+        //{
+        //    CreateLauncher();
+        //}
 
         public void onLevelWasLoaded(GameScenes scene)
         {
@@ -151,7 +154,40 @@ namespace WarpDrive
 
         public void onVesselChange(Vessel vessel)
         {
-            masterDrive = vessel.FindPartModulesImplementing<StandAloneAlcubierreDrive>().Find(t => !t.isSlave);
+            Logging.LogDebug("onVesselChange");
+            var drives = vessel.FindPartModulesImplementing<StandAloneAlcubierreDrive>();
+
+            if (drives.Count == 0)
+            {
+                if (toolbarControl != null)
+                {
+                    Logging.Log("No WarpDrive Detected, Warpatron 9000 is removed");
+
+                    toolbarControl.SetFalse();
+
+                    toolbarControl.OnDestroy();
+                    Destroy(toolbarControl);
+                    toolbarControl = null;
+                }
+            }
+            else
+            {
+                masterDrive = drives.Find(t => !t.isSlave);
+
+                if (toolbarControl == null)
+                {
+                    Logging.Log("WarpDrive Detected, Warpatron 9000 is created");
+
+                    toolbarControl = gameObject.AddComponent<ToolbarControl>();
+                    toolbarControl.AddToAllToolbars(onAppTrue, onAppFalse,
+                        ApplicationLauncher.AppScenes.FLIGHT | ApplicationLauncher.AppScenes.MAPVIEW,
+                        MODID,
+                        "waButton",
+                        "WarpDrive/Textures/warpdrive-icon",
+                        "WarpDrive/Textures/warpdrive-icon"
+                    );
+                }
+            }
         }
 
         public void onAppTrue()
@@ -177,6 +213,7 @@ namespace WarpDrive
         internal const string MODID = "AppLaunch";
         internal const string MODNAME = "Warpotron9000";
 
+#if false
         private void CreateLauncher()
         {
 #if false
@@ -201,26 +238,20 @@ namespace WarpDrive
 					GameDatabase.Instance.GetTexture ("WarpDrive/Textures/warpdrive-icon", false)
 				);
 #endif
-            if (toolbarControl == null)
-            {
-                toolbarControl = gameObject.AddComponent<ToolbarControl>();
-                toolbarControl.AddToAllToolbars(onAppTrue, onAppFalse,
-                    ApplicationLauncher.AppScenes.FLIGHT | ApplicationLauncher.AppScenes.MAPVIEW,
-                    MODID,
-                    "waButton",
-                    "WarpDrive/Textures/warpdrive-icon",
-                    "WarpDrive/Textures/warpdrive-icon"
-                );
-
-                if (FlightGlobals.ActiveVessel.FindPartModulesImplementing<StandAloneAlcubierreDrive>().Count == 0)
+                if (toolbarControl == null)
                 {
-                    Debug.Log("Trying to hide Warpotron");
-                    toolbarControl.Enabled = false;
-
+                    toolbarControl = gameObject.AddComponent<ToolbarControl>();
+                    toolbarControl.AddToAllToolbars(onAppTrue, onAppFalse,
+                        ApplicationLauncher.AppScenes.FLIGHT | ApplicationLauncher.AppScenes.MAPVIEW,
+                        MODID,
+                        "waButton",
+                        "WarpDrive/Textures/warpdrive-icon",
+                        "WarpDrive/Textures/warpdrive-icon"
+                    );
                 }
-
-            }
+            
         }
+#endif
 
         private void DestroyLauncher()
         {
@@ -264,7 +295,7 @@ namespace WarpDrive
                 guiId,
                 windowRect,
                 DrawGUI,
-                "#WD_Warpotron9000",
+                Localizer.Format("#WD_Warpotron9000"),
                 GUILayout.ExpandWidth(true),
                 GUILayout.ExpandHeight(true)
             );
@@ -293,13 +324,13 @@ namespace WarpDrive
             Layout.LabelAndText("#WD_upgradeStatus", "#WD_upgradeStatus_t",
                 masterDrive.upgradeStatus);
             Layout.LabelAndText("#WD_currentGravityForce", "#WD_currentGravityForce_t",
-                masterDrive.currentGravityForce.ToString("F3") + "#WD_Units_g");
+                masterDrive.currentGravityForce.ToString("N4") + Localizer.Format("#WD_Units_g"));
             Layout.LabelAndText("#WD_speedRestrictedbyG", "#WD_speedRestrictedbyG_t",
-                masterDrive.speedRestrictedbyG.ToString("F3") + "#WD_Units_c");
+                masterDrive.speedRestrictedbyG.ToString("N2") + Localizer.Format("#WD_Units_c"));
             Layout.LabelAndText("#WD_currentSpeedFactor", "#WD_currentSpeedFactor_t",
-                masterDrive.currentSpeedFactor.ToString("F3") + "#WD_Units_c");
+                masterDrive.currentSpeedFactor.ToString("N2") + Localizer.Format("#WD_Units_c"));
             Layout.LabelAndText("#WD_maximumSpeedFactor", "#WD_maximumSpeedFactor_t",
-                masterDrive.maximumSpeedFactor.ToString("F3") + "#WD_Units_c");
+                masterDrive.maximumSpeedFactor.ToString("N2") + Localizer.Format("#WD_Units_c"));
 
             if (maximized)
             {
@@ -310,70 +341,45 @@ namespace WarpDrive
                 }
 
                 Layout.LabelAndText("#WD_minimalRequiredEM", "#WD_minimalRequiredEM_t",
-                    masterDrive.minimalRequiredEM.ToString("F3"));
+                    masterDrive.minimalRequiredEM.ToString("N2"));
                 Layout.LabelAndText("#WD_currentRequiredEM", "#WD_currentRequiredEM_t",
-                    masterDrive.requiredForCurrentFactor.ToString("F3"));
+                    masterDrive.requiredForCurrentFactor.ToString("N2"));
                 Layout.LabelAndText("#WD_maximumRequiredEM", "#WD_maximumRequiredEM_t",
-                    masterDrive.requiredForMaximumFactor.ToString("F3"));
+                    masterDrive.requiredForMaximumFactor.ToString("N2"));
 
                 Layout.LabelAndText("#WD_drivesTotalPower", "#WD_drivesTotalPower_t",
-                    masterDrive.drivesTotalPower.ToString("F3"));
+                    masterDrive.drivesTotalPower.ToString("N1"));
+
+                Layout.LabelAndText("#WD_containmentFieldPower", "#WD_containmentFieldPower_t",
+                    masterDrive.containmentFieldPowerMax.ToString("N1"));
+
+
                 Layout.LabelAndText("#WD_vesselTotalMass", "#WD_vesselTotalMass_t",
-                    masterDrive.vesselTotalMass.ToString("F3") + "#WD_Units_t");
-                Layout.LabelAndText("#WD_drivesEfficiency", "WD_drivesEfficiency_t",
-                    masterDrive.drivesEfficiency.ToString("F3"));
+                    masterDrive.vesselTotalMass.ToString("N2") + Localizer.Format("#WD_Units_t"));
+                Layout.LabelAndText("#WD_drivesEfficiency", "#WD_drivesEfficiency_t",
+                    masterDrive.drivesEfficiency.ToString("N2"));
 
+                string s = new string('>', masterDrive.lowEnergyFactor) + "1" +
+                            new string('<', masterDrive.warpFactors.Length - masterDrive.lowEnergyFactor - 1);
 
-                if (!String.IsNullOrWhiteSpace(lastTooltip))
-                {
-                    //Debug.Log("tooltip: " + GUI.tooltip);
-                    GUIContent contTooltip = new GUIContent(lastTooltip);
-                    Rect TooltipPosition = new Rect(); // = new Rect(Event.current.mousePosition.x, Event.current.mousePosition.y, 200, 200);
-
-                    Vector2d TooltipMouseOffset = new Vector2d();
-                    TooltipPosition.x = Event.current.mousePosition.x + (Single)TooltipMouseOffset.x;
-                    TooltipPosition.y = Event.current.mousePosition.y + (Single)TooltipMouseOffset.y;
-
-                    Styles.SetSkin();
-                    GUIStyle styleTooltip = new GUIStyle(Styles.textArea);
-                    //Int32 TooltipMaxWidth = 200;
-                    //styleTooltip.CalcMinMaxWidth(contTooltip, out float minwidth, out float maxwidth); // figure out how wide one line would be
-                    //TooltipPosition.width = Math.Min(TooltipMaxWidth - styleTooltip.padding.horizontal, maxwidth); //then work out the height with a max width
-                    TooltipPosition.width = 200;
-
-                    TooltipPosition.height = styleTooltip.CalcHeight(contTooltip, TooltipPosition.width); // heres the result
-                    GUI.Label(TooltipPosition, contTooltip, styleTooltip);
-                    //On top of everything
-                    GUI.depth = -10;
-                }
-                    
-
-                if (Event.current.type == EventType.Repaint && GUI.tooltip != lastTooltip)
-                {
-                    lastTooltip = GUI.tooltip;
-                    refresh = true;
-                }
-
-
-                //string s = new string('>', masterDrive.lowEnergyFactor) + "1" +
-                //            new string('<', masterDrive.warpFactors.Length - masterDrive.lowEnergyFactor - 1);
-
-                string s = "1>>>>1>>>>1<<<<1<<<<1<<<<1";
+                //string s = "1>>>>1>>>>1<<<<1<<<<1<<<<1";
 
                 if (masterDrive.maximumFactor >= masterDrive.currentFactor)
-                    s = "<b>" + s.Substring(0, masterDrive.currentFactor) +
-                        Utils.Colorize(s.Substring(masterDrive.currentFactor, 1), Palette.green) +
+                    s = s.Substring(0, masterDrive.currentFactor) +
+                        "<b>" + Utils.Colorize(s.Substring(masterDrive.currentFactor, 1), Palette.green) + "</b>" +
                         s.Substring(masterDrive.currentFactor + 1, masterDrive.maximumFactor - masterDrive.currentFactor) +
-                        Utils.Colorize(s.Substring(masterDrive.maximumFactor + 1), Palette.gray50) + "</b>";
+                        Utils.Colorize(s.Substring(masterDrive.maximumFactor + 1), Palette.gray50);
                 else
-                    s = "<b>" + s.Substring(0, masterDrive.maximumFactor + 1) +
-                    Utils.Colorize(s.Substring(masterDrive.maximumFactor + 1, masterDrive.currentFactor - masterDrive.maximumFactor - 1), Palette.gray50) +
-                    Utils.Colorize(s.Substring(masterDrive.currentFactor, 1), Palette.red)+
-                     Utils.Colorize(s.Substring(masterDrive.currentFactor + 1), Palette.gray50) + "</b>";
+                    s = s.Substring(0, masterDrive.maximumFactor + 1) +
+                        Utils.Colorize(s.Substring(masterDrive.maximumFactor + 1, masterDrive.currentFactor - masterDrive.maximumFactor - 1), Palette.gray50) +
+                        "<b>" + Utils.Colorize(s.Substring(masterDrive.currentFactor, 1), Palette.red) + "</b>" +
+                        Utils.Colorize(s.Substring(masterDrive.currentFactor + 1), Palette.gray50);
 
-                // Doesn't work
-                Layout.LabelCentered(s, Palette.blue, "AAA" );
+                string s_tooltip = 
+                    String.Join(" > ", masterDrive.warpFactors.Where(z => z < 1)) + " > 1 < " + 
+                    String.Join(" < ", masterDrive.warpFactors.Where(z => z > 1));
 
+                Layout.LabelCentered(s, s_tooltip, Palette.blue);
 
                 //				Layout.LabelAndText ("Magnitude Diff", masterDrive.magnitudeDiff.ToString ());
                 //				Layout.LabelAndText ("Magnitude Change", masterDrive.magnitudeChange.ToString ());
@@ -389,52 +395,62 @@ namespace WarpDrive
             if (TimeWarp.CurrentRateIndex == 0)
             {
                 GUILayout.BeginHorizontal();
-                if (Layout.Button("#WD_DecreaseFactor", Palette.red/*, GUILayout.Width(141)*/))
+                if (Layout.Button("#WD_DecreaseFactor", color:Palette.red)) /*, GUILayout.Width(141)*/
                 {
                     masterDrive.DecreaseFactor();
                 }
-                if (Layout.Button("#WD_IncreaseFactor", Palette.green/*, GUILayout.Width(141)*/))
+                if (Layout.Button("#WD_IncreaseFactor", color: Palette.green)) /*, GUILayout.Width(141)*/
                 {
                     masterDrive.IncreaseFactor();
                 }
                 GUILayout.EndHorizontal();
 
-                if (Layout.Button("#WD_ReduceFactor", Palette.blue))
+                if (Layout.Button("#WD_ReduceFactor", "#WD_ReduceFactor_t", color: Palette.blue))
                 {
                     masterDrive.ReduceFactor();
                 }
 
                 if (!masterDrive.inWarp)
                 {
-                    if (Layout.Button("#WD_ActivateWarpDrive", Palette.green))
+                    if (Layout.Button("#WD_ActivateWarpDrive", color: Palette.green))
                     {
                         masterDrive.ActivateWarpDrive();
                     }
                 }
-                else if (Layout.Button("#WD_DeactivateWarpDrive", Palette.red))
+                else if (Layout.Button("#WD_DeactivateWarpDrive", color: Palette.red))
                 {
                     masterDrive.DeactivateWarpDrive();
                 }
 
                 if (!masterDrive.containmentField)
                 {
-                    if (Layout.Button("#WD_ActivateContainmentField", Palette.green))
+                    if (Layout.Button("#WD_ActivateContainmentField", color: Palette.green))
                     {
                         masterDrive.StartContainment();
                     }
                 }
-                else if (Layout.Button("#WD_DeactivateContainmentField", Palette.red))
+                else if (Layout.Button("#WD_DeactivateContainmentField", color: Palette.red))
                 {
                     masterDrive.StopContainment();
                 }
             }
 
-            if (Layout.Button("#WD_Close", Palette.red))
+            if (Layout.Button("#WD_Close", color:Palette.red))
                 toolbarControl.SetFalse();
 
-            if (!String.IsNullOrWhiteSpace(lastTooltip))
-                GUILayout.Label(new GUIContent(lastTooltip));
+            if (HighLogic.CurrentGame.Parameters.CustomParams<WarpDrive>().tooltip)
+            {
+                if (!String.IsNullOrWhiteSpace(lastTooltip))
+                    Layout.Label(lastTooltip, color:Palette.blue);
+                    //GUILayout.Label(new GUIContent(lastTooltip));
 
+
+                if (Event.current.type == EventType.Repaint && GUI.tooltip != lastTooltip)
+                {
+                    lastTooltip = GUI.tooltip;
+                    refresh = true;
+                }
+            }
 
 #if false
             if (appLauncherButton != null)
