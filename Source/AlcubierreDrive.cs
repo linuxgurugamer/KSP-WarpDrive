@@ -31,11 +31,6 @@ namespace WarpDrive
 		[KSPField(isPersistant = false)]
 		public float outerRadius;
 
-
-
-		//[KSPField(isPersistant = true)]
-		//public bool launched = false;		
-
 		private PartResourceDefinition emResource;
 		private PartResourceDefinition ecResource;
 
@@ -43,91 +38,13 @@ namespace WarpDrive
 		double defaultEMproduce = 0.01;
 		double defaultECconsume = 100;
 
-
 		private List<StandAloneAlcubierreDrive> alcubierreDrives;
 		private WarpFX fx;
 
 		private bool alarm = false;
-
 		internal int instanceId;
-
 		internal bool isSlave;
 
-#if false
-		[KSPEvent(guiActive = true, active = false, guiName = "#WD_setMaster",
-			groupName = "WarpDrive", groupDisplayName = "WarpDrive")]
-		protected void setMaster()
-		{
-			alcubierreDrives = part.vessel.FindPartModulesImplementing<StandAloneAlcubierreDrive>();
-
-			foreach (var drive in alcubierreDrives)
-			{
-				if (!drive.isSlave)
-				{
-					drive.isSlave = true;
-					drive.Events["setMaster"].active = true;
-					drive.UnloadMedia();
-				}
-			}
-
-			isSlave = false;
-			foreach (var f in Fields) { if (f.group.name == "WarpDrive") f.guiActive = true; }
-			Events["setMaster"].active = false;
-
-			if (HighLogic.LoadedSceneIsFlight)
-				OnStartPrivate();
-		}
-
-		[KSPEvent(guiActive = true, active = false, guiName = "#WD_DecreaseFactor",
-	groupName = "WarpDrive", groupDisplayName = "WarpDrive")]
-		protected void DecreaseFactorEvent()
-		{
-			DecreaseFactor();
-		}
-
-		[KSPEvent(guiActive = true, active = false, guiName = "#WD_IncreaseFactor",
-groupName = "WarpDrive", groupDisplayName = "WarpDrive")]
-		protected void IncreaseFactorEvent()
-		{
-			IncreaseFactor();
-		}
-
-		[KSPEvent(guiActive = true, active = false, guiName = "#WD_ReduceFactor",
-groupName = "WarpDrive", groupDisplayName = "WarpDrive")]
-		protected void ReduceFactorEvent()
-		{
-			ReduceFactor();
-		}
-
-		[KSPEvent(guiActive = true, active = false, guiName = "#WD_ActivateWarpDrive",
-groupName = "WarpDrive", groupDisplayName = "WarpDrive")]
-		protected void ActivateWarpDriveEvent()
-		{
-			if (inWarp)
-			{
-				DeactivateWarpDrive();
-			}
-			else
-			{
-				ActivateWarpDrive();
-			}
-		}
-
-		[KSPEvent(guiActive = true, active = false, guiName = "#WD_ActivateContainmentField",
-groupName = "WarpDrive", groupDisplayName = "WarpDrive")]
-		protected void ActivateContainmentFieldEvent()
-		{
-			if (containmentField)
-			{
-				StopContainment();
-			}
-			else
-			{
-				StartContainment();
-			}
-		}
-
-#endif
 		[KSPField(isPersistant = false, guiActive = true, guiActiveEditor = true, guiName = "#WD_upgradeStatus", groupName = "WarpDrive", groupDisplayName = "WarpDrive")]
 		public string upgradeStatus;
 		[KSPField(isPersistant = false, guiActive = true, guiActiveEditor = true, guiName = "#WD_drivePower", groupName = "WarpDrive", groupDisplayName = "WarpDrive")]
@@ -170,7 +87,6 @@ groupName = "WarpDrive", groupDisplayName = "WarpDrive")]
 			guiFormat = "N2")]
 		internal double drivesEfficiency;
 
-
 		private double magnitudeDiff;
 		private double magnitudeChange;
 
@@ -210,12 +126,6 @@ groupName = "WarpDrive", groupDisplayName = "WarpDrive")]
 
 			instanceId = GetInstanceID();
 
-			lowEnergyFactor = warpFactors.IndexOf(1.0f);
-			if (currentFactor == -1)
-				currentFactor = lowEnergyFactor;
-
-			previousFactor = currentFactor;
-
 			if (!isSlave)
 			{
 				alcubierreDrives = part.vessel.FindPartModulesImplementing<StandAloneAlcubierreDrive>();
@@ -224,17 +134,21 @@ groupName = "WarpDrive", groupDisplayName = "WarpDrive")]
 					if (drive.GetInstanceID() != instanceId)
 					{
 						drive.isSlave = true;
-						foreach (var f in drive.Fields) { f.guiActive = false; }
-						drive.Events["setMaster"].active = true;
 					}
 				}
 			}
-
-			if (isSlave)
+			else
 			{
 				LogDebug("Init(), the drive is slave, stop");
 				return;
 			}
+
+			lowEnergyFactor = warpFactors.IndexOf(1.0f);
+
+			if (currentFactor == -1)
+				currentFactor = lowEnergyFactor;
+
+			previousFactor = currentFactor;
 
 			fx = new WarpFX(this);
 			if (inWarp)
@@ -263,8 +177,6 @@ groupName = "WarpDrive", groupDisplayName = "WarpDrive")]
 			{
 				warpSound.Play();
 			}
-
-			UpdateMasterEventsGUI();
 
 			LogDebug("Init() End");
 		}
@@ -469,8 +381,6 @@ groupName = "WarpDrive", groupDisplayName = "WarpDrive")]
 
 			InitiateWarp ();
 
-			ToggleDriveSetMasterEvent(false);
-			UpdateMasterEventsGUI();
 			return true;
 		}
 
@@ -507,9 +417,6 @@ groupName = "WarpDrive", groupDisplayName = "WarpDrive")]
 			warpSound.Stop ();
 			if (containmentField)
 				containmentSound.Play ();
-
-			ToggleDriveSetMasterEvent(true);
-			UpdateMasterEventsGUI();
 			return true;
 		}
 
@@ -526,9 +433,6 @@ groupName = "WarpDrive", groupDisplayName = "WarpDrive")]
 			containmentSound.Play ();
 			containmentSound.loop = true;
 
-			ToggleDriveSetMasterEvent(false);
-			UpdateMasterEventsGUI();
-
 			return true;
 		}
 
@@ -539,51 +443,7 @@ groupName = "WarpDrive", groupDisplayName = "WarpDrive")]
 			containmentField = false;
 			containmentSound.Stop ();
 			ScreenMessages.PostScreenMessage (Localizer.Format("#WD_ContainmentFieldOff"), 7.0f);
-
-			ToggleDriveSetMasterEvent(true);
-			UpdateMasterEventsGUI();
 			return true;
-		}
-
-		/// <summary>
-		/// enable/disable "Set Master" button for all slave drives
-		/// </summary>
-		/// <param name="active"></param> true - enable, false - disable
-		/// 
-		private void ToggleDriveSetMasterEvent(bool active)
-		{
-			if (alcubierreDrives != null)
-			{
-				foreach (var drive in alcubierreDrives)
-				{
-					if (drive.GetInstanceID() != instanceId)
-					{
-						drive.Events["setMaster"].active = active;
-					}
-				}
-			}
-		}
-
-		static bool a = false;
-		private void UpdateMasterEventsGUI()
-		{
-#if false
-			if (containmentField)
-				Events["ActivateContainmentFieldEvent"].guiName = "#WD_DeactivateContainmentField";
-			else
-				Events["ActivateContainmentFieldEvent"].guiName = "#WD_ActivateContainmentField";
-
-			if (inWarp)
-				Events["ActivateWarpDriveEvent"].guiName = "#WD_DeactivateWarpDrive";
-			else
-				Events["ActivateWarpDriveEvent"].guiName = "#WD_ActivateWarpDrive";
-
-			Events["ActivateContainmentFieldEvent"].active = true;
-			Events["ActivateWarpDriveEvent"].active = true;
-			Events["DecreaseFactorEvent"].active = true;
-			Events["IncreaseFactorEvent"].active = true;
-			Events["ReduceFactorEvent"].active = true;
-#endif
 		}
 
 		public void ReduceFactor()
