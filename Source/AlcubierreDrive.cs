@@ -45,11 +45,11 @@ namespace WarpDrive
 		internal int instanceId;
 		internal bool isSlave;
 
-		[KSPField(isPersistant = false, guiActive = true, guiActiveEditor = true, guiName = "#WD_upgradeStatus", groupName = "WarpDrive", groupDisplayName = "WarpDrive")]
+		[KSPField(isPersistant = false, guiActive = true, guiName = "#WD_upgradeStatus", groupName = "WarpDrive", groupDisplayName = "WarpDrive")]
 		public string upgradeStatus;
-		[KSPField(isPersistant = false, guiActive = true, guiActiveEditor = true, guiName = "#WD_drivePower", groupName = "WarpDrive", groupDisplayName = "WarpDrive")]
+		[KSPField(isPersistant = false, guiActive = true, guiName = "#WD_drivePower", groupName = "WarpDrive", groupDisplayName = "WarpDrive")]
 		public float drivePower;
-		[KSPField(isPersistant = false, guiActive = true, guiActiveEditor = true, guiName = "#WD_containmentFieldPower", groupName = "WarpDrive", groupDisplayName = "WarpDrive")]
+		[KSPField(isPersistant = false, guiActive = true, guiName = "#WD_containmentFieldPower", groupName = "WarpDrive", groupDisplayName = "WarpDrive")]
 		public float containmentFieldPower;
 		
 

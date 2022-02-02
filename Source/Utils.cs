@@ -87,8 +87,15 @@ namespace WarpDrive
 				return false;
 		}
 
-		public static string Colorize(string text, UnityEngine.Color color)
-			=> $"<color=#{UnityEngine.ColorUtility.ToHtmlStringRGB(color)}>{text}</color>";
+		public static string Colorize(string text, UnityEngine.Color color, bool bold = false)
+		{
+			if (bold)
+				return $"<b><color=#{UnityEngine.ColorUtility.ToHtmlStringRGB(color)}>{text}</color></b>";
+			else
+				return $"<color=#{UnityEngine.ColorUtility.ToHtmlStringRGB(color)}>{text}</color>";
+
+		}
+	
 		
 	}
 }

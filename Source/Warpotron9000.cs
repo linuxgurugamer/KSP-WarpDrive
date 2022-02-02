@@ -321,9 +321,8 @@ namespace WarpDrive
             }
 
             GUILayout.BeginVertical();
-            Layout.LabelAndText("#WD_upgradeStatus", "#WD_upgradeStatus_t",
-                masterDrive.upgradeStatus);
-            Layout.LabelAndText("#WD_currentGravityForce", "#WD_currentGravityForce_t",
+            Layout.LabelAndText("#WD_upgradeStatus", "#WD_upgradeStatus_t", masterDrive.upgradeStatus);
+            Layout.LabelAndText("#WD_currentGravityForce", "#WD_currentGravityForce_t", 
                 masterDrive.currentGravityForce.ToString("N4") + Localizer.Format("#WD_Units_g"));
             Layout.LabelAndText("#WD_speedRestrictedbyG", "#WD_speedRestrictedbyG_t",
                 masterDrive.speedRestrictedbyG.ToString("N2") + Localizer.Format("#WD_Units_c"));
@@ -340,24 +339,14 @@ namespace WarpDrive
                     refresh = true;
                 }
 
-                Layout.LabelAndText("#WD_minimalRequiredEM", "#WD_minimalRequiredEM_t",
-                    masterDrive.minimalRequiredEM.ToString("N2"));
-                Layout.LabelAndText("#WD_currentRequiredEM", "#WD_currentRequiredEM_t",
-                    masterDrive.requiredForCurrentFactor.ToString("N2"));
-                Layout.LabelAndText("#WD_maximumRequiredEM", "#WD_maximumRequiredEM_t",
-                    masterDrive.requiredForMaximumFactor.ToString("N2"));
-
-                Layout.LabelAndText("#WD_drivesTotalPower", "#WD_drivesTotalPower_t",
-                    masterDrive.drivesTotalPower.ToString("N1"));
-
-                Layout.LabelAndText("#WD_containmentFieldPower", "#WD_containmentFieldPower_t",
-                    masterDrive.containmentFieldPowerMax.ToString("N1"));
-
-
-                Layout.LabelAndText("#WD_vesselTotalMass", "#WD_vesselTotalMass_t",
+                Layout.LabelAndText("#WD_minimalRequiredEM", "#WD_minimalRequiredEM_t", masterDrive.minimalRequiredEM.ToString("N2"));
+                Layout.LabelAndText("#WD_currentRequiredEM", "#WD_currentRequiredEM_t", masterDrive.requiredForCurrentFactor.ToString("N2"));
+                Layout.LabelAndText("#WD_maximumRequiredEM", "#WD_maximumRequiredEM_t", masterDrive.requiredForMaximumFactor.ToString("N2"));
+                Layout.LabelAndText("#WD_drivesTotalPower", "#WD_drivesTotalPower_t",   masterDrive.drivesTotalPower.ToString("N1"));
+                Layout.LabelAndText("#WD_containmentFieldPower", "#WD_containmentFieldPower_t", masterDrive.containmentFieldPowerMax.ToString("N1"));
+                Layout.LabelAndText("#WD_vesselTotalMass", "#WD_vesselTotalMass_t", 
                     masterDrive.vesselTotalMass.ToString("N2") + Localizer.Format("#WD_Units_t"));
-                Layout.LabelAndText("#WD_drivesEfficiency", "#WD_drivesEfficiency_t",
-                    masterDrive.drivesEfficiency.ToString("N2"));
+                Layout.LabelAndText("#WD_drivesEfficiency", "#WD_drivesEfficiency_t", masterDrive.drivesEfficiency.ToString("N2"));
 
                 string s = new string('>', masterDrive.lowEnergyFactor) + "1" +
                             new string('<', masterDrive.warpFactors.Length - masterDrive.lowEnergyFactor - 1);
@@ -366,13 +355,13 @@ namespace WarpDrive
 
                 if (masterDrive.maximumFactor >= masterDrive.currentFactor)
                     s = s.Substring(0, masterDrive.currentFactor) +
-                        "<b>" + Utils.Colorize(s.Substring(masterDrive.currentFactor, 1), Palette.green) + "</b>" +
+                        Utils.Colorize(s.Substring(masterDrive.currentFactor, 1), Palette.green, bold:true) +
                         s.Substring(masterDrive.currentFactor + 1, masterDrive.maximumFactor - masterDrive.currentFactor) +
                         Utils.Colorize(s.Substring(masterDrive.maximumFactor + 1), Palette.gray50);
                 else
                     s = s.Substring(0, masterDrive.maximumFactor + 1) +
                         Utils.Colorize(s.Substring(masterDrive.maximumFactor + 1, masterDrive.currentFactor - masterDrive.maximumFactor - 1), Palette.gray50) +
-                        "<b>" + Utils.Colorize(s.Substring(masterDrive.currentFactor, 1), Palette.red) + "</b>" +
+                        Utils.Colorize(s.Substring(masterDrive.currentFactor, 1), Palette.red, bold:true) +
                         Utils.Colorize(s.Substring(masterDrive.currentFactor + 1), Palette.gray50);
 
                 string s_tooltip = 
@@ -440,10 +429,9 @@ namespace WarpDrive
 
             if (HighLogic.CurrentGame.Parameters.CustomParams<WarpDrive>().tooltip)
             {
+                // on the next tick, read lastTooltip
                 if (!String.IsNullOrWhiteSpace(lastTooltip))
                     Layout.Label(lastTooltip, color:Palette.blue);
-                    //GUILayout.Label(new GUIContent(lastTooltip));
-
 
                 if (Event.current.type == EventType.Repaint && GUI.tooltip != lastTooltip)
                 {
