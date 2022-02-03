@@ -8,7 +8,7 @@
 	
 	@entryCost *= 16
     @cost *= 16
-	@title = #WD_WarpDrive-A0_title
+	@title = #WD_WarpDrive-100_title
 	@mass *= 64
 	
 	@MODULE[ModuleReactionWheel]

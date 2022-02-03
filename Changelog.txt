@@ -1,15 +1,5 @@
 Changelog
-
-0.10.0
-	Add Tooltips on the Warpotron GUI
-	Add Speed Factor scale line on the Warpotron GUI
-	Change fields to correspont GUI name
-	Add Localization
-	Duplicate Warpotron GUI in the PAW
-	feature to change master drive in the PAW
-	add params of the WarpDrive in the config
-	add two WarpDrive PartUpgrade instead of hardcoded one 
-
+	
 0.9.4.2
 	Thanks to user @yalov for these changes:
 		Update Message for EC production

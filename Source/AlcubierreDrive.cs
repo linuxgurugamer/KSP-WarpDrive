@@ -34,9 +34,9 @@ namespace WarpDrive
 		private PartResourceDefinition emResource;
 		private PartResourceDefinition ecResource;
 
-		double defaultEMdecay = 100;
-		double defaultEMproduce = 0.01;
-		double defaultECconsume = 100;
+		double baseEMdecay = 100;
+		double baseEMproduce = 0.01;
+		double baseECconsume = 100;
 
 		private List<StandAloneAlcubierreDrive> alcubierreDrives;
 		private WarpFX fx;
@@ -240,11 +240,11 @@ namespace WarpDrive
 
 			// Decay exotic matter
 			if (!containmentField) {
-				vessel.RequestResource (part, emResource.id, containmentFieldPowerMax * defaultEMdecay * timeDelta, true);
+				vessel.RequestResource (part, emResource.id, containmentFieldPowerMax * baseEMdecay * timeDelta, true);
 				return;
 			}
 
-			double ecReturned = vessel.RequestResource (part, ecResource.id, containmentFieldPowerMax * defaultECconsume * timeDelta, true);
+			double ecReturned = vessel.RequestResource (part, ecResource.id, containmentFieldPowerMax * baseECconsume * timeDelta, true);
 
 			// No EC, shutdown containment field
 			if (ecReturned == 0) {
@@ -252,7 +252,7 @@ namespace WarpDrive
 				ScreenMessages.PostScreenMessage (Localizer.Format("#WD_ContainmentFieldOff"), 7.0f);
 				StopContainment ();
 			} else
-				vessel.RequestResource (part, emResource.id, -1 * containmentFieldPowerMax * defaultEMproduce * timeDelta, true);
+				vessel.RequestResource (part, emResource.id, -1 * containmentFieldPowerMax * baseEMproduce * timeDelta, true);
 		}
 
 		public void UpdateWarpSpeed() {
@@ -523,39 +523,20 @@ namespace WarpDrive
 			alarmSound.Stop ();
 		}
 
-		private void UnloadMedia()
-		{
-			// this method suppouse to free memory on the old master module
-			// if a master module is changed
-
-			containmentSound?.clip?.UnloadAudioData();
-			warpSound?.clip?.UnloadAudioData();
-			alarmSound?.clip?.UnloadAudioData();
-
-			Destroy(containmentSound);
-			Destroy(warpSound);
-			Destroy(alarmSound);
-
-			containmentSound = null;
-			warpSound = null;
-			alarmSound = null;
-		}
-
-
 		public override string GetInfo() =>
 			Localizer.Format("#WD_Info") +
 			Localizer.Format("#WD_InfoStatus", upgradeStatus) +
 			Localizer.Format("#WD_InfoDrivePower", drivePower) +
 			Localizer.Format("#WD_InfoContainmentFieldPower", containmentFieldPower) +
-			Localizer.Format("#WD_InfoContainmentField", containmentFieldPower * defaultECconsume, containmentFieldPower * defaultEMproduce);
+			Localizer.Format("#WD_InfoContainmentField", containmentFieldPower * baseECconsume, containmentFieldPower * baseEMproduce);
 
-		public override string GetModuleDisplayName() => Localizer.Format("#WD_ModuleStandAloneAlcubierreDriveDisplayName");
+		public override string GetModuleDisplayName() => Localizer.Format("#WD_InfoDisplayName");
 
 		/// <summary>
 		/// Return a string title for your module.
 		/// </summary>
 		/// <returns></returns>
-		public string GetModuleTitle() => Localizer.Format("#WD_ModuleStandAloneAlcubierreDriveDisplayName");
+		public string GetModuleTitle() => Localizer.Format("#WD_InfoDisplayName");
 
 		/// <summary>
 		/// Return a method delegate to draw a custom panel, or null if not necessary.
