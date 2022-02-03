@@ -1,12 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using UnityEngine;
 using KSP.UI.Screens;
 using KSP.IO;
 using ToolbarControl_NS;
 using KSP.Localization;
 using System.Linq;
-using Smooth.Compare.Utilities;
+
 
 namespace WarpDrive
 {
@@ -321,7 +320,6 @@ namespace WarpDrive
             }
 
             GUILayout.BeginVertical();
-            Layout.LabelAndText("#WD_upgradeStatus", "#WD_upgradeStatus_t", masterDrive.upgradeStatus);
             Layout.LabelAndText("#WD_currentGravityForce", "#WD_currentGravityForce_t", 
                 masterDrive.currentGravityForce.ToString("N4") + Localizer.Format("#WD_Units_g"));
             Layout.LabelAndText("#WD_speedRestrictedbyG", "#WD_speedRestrictedbyG_t",
@@ -344,8 +342,7 @@ namespace WarpDrive
                 Layout.LabelAndText("#WD_maximumRequiredEM", "#WD_maximumRequiredEM_t", masterDrive.requiredForMaximumFactor.ToString("N2"));
                 Layout.LabelAndText("#WD_drivesTotalPower", "#WD_drivesTotalPower_t",   masterDrive.drivesTotalPower.ToString("N1"));
                 Layout.LabelAndText("#WD_containmentFieldPower", "#WD_containmentFieldPower_t", masterDrive.containmentFieldPowerMax.ToString("N1"));
-                Layout.LabelAndText("#WD_vesselTotalMass", "#WD_vesselTotalMass_t", 
-                    masterDrive.vesselTotalMass.ToString("N2") + Localizer.Format("#WD_Units_t"));
+                Layout.LabelAndText("#WD_vesselTotalMass", "#WD_vesselTotalMass_t", masterDrive.vesselTotalMass.ToString("N2") + Localizer.Format("#WD_Units_t"));
                 Layout.LabelAndText("#WD_drivesEfficiency", "#WD_drivesEfficiency_t", masterDrive.drivesEfficiency.ToString("N2"));
 
                 string s = new string('>', masterDrive.lowEnergyFactor) + "1" +

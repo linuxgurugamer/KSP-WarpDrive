@@ -33,6 +33,12 @@ namespace WarpDrive
 		}
 
 		internal void StopFX() {
+			if (MapView.MapIsEnabled)
+			{
+				MapView.ExitMapView();
+				Logging.LogDebug("StopFX: ExitMapView");
+			}
+
 			warpTrailInner.GetComponent<Renderer> ().enabled = false;
 			warpTrailOuter.GetComponent<Renderer> ().enabled = false;
 			warpPlaneA.GetComponent<Renderer> ().enabled = false;

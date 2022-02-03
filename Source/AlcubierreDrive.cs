@@ -41,9 +41,11 @@ namespace WarpDrive
 		private List<StandAloneAlcubierreDrive> alcubierreDrives;
 		private WarpFX fx;
 
+
 		private bool alarm = false;
 		internal int instanceId;
 		internal bool isSlave;
+
 
 		[KSPField(isPersistant = false, guiActive = true, guiName = "#WD_upgradeStatus", groupName = "WarpDrive", groupDisplayName = "WarpDrive")]
 		public string upgradeStatus;
@@ -53,38 +55,27 @@ namespace WarpDrive
 		public float containmentFieldPower;
 		
 
-		[KSPField(isPersistant = false, groupName = "WarpDrive", groupDisplayName = "WarpDrive",
-			guiFormat = "N4", guiUnits = "#WD_Units_g")]
+		[KSPField(isPersistant = false)]
 		internal double currentGravityForce;
-		[KSPField(isPersistant = false, groupName = "WarpDrive", groupDisplayName = "WarpDrive",
-			guiFormat = "N2", guiUnits = "#WD_Units_c")]
+		[KSPField(isPersistant = false)]
 		internal double speedRestrictedbyG;
-		[KSPField(isPersistant = false,  groupName = "WarpDrive", groupDisplayName = "WarpDrive",
-			guiFormat = "N2", guiUnits = "#WD_Units_c")]
+		[KSPField(isPersistant = false)]
 		internal double currentSpeedFactor;
-		[KSPField(isPersistant = false,  groupName = "WarpDrive", groupDisplayName = "WarpDrive",
-			guiFormat = "N2", guiUnits = "#WD_Units_c")]
+		[KSPField(isPersistant = false)]
 		internal double maximumSpeedFactor;
-		[KSPField(isPersistant = false, groupName = "WarpDrive", groupDisplayName = "WarpDrive",
-			guiFormat = "N2")]
+		[KSPField(isPersistant = false)]
 		internal double minimalRequiredEM;
-		[KSPField(isPersistant = false,  groupName = "WarpDrive", groupDisplayName = "WarpDrive",
-			guiFormat = "N2")]
+		[KSPField(isPersistant = false)]
 		internal double requiredForCurrentFactor;
-		[KSPField(isPersistant = false, groupName = "WarpDrive", groupDisplayName = "WarpDrive",
-			guiFormat = "N2")]
+		[KSPField(isPersistant = false)]
 		internal double requiredForMaximumFactor;
-		[KSPField(isPersistant = false, groupName = "WarpDrive", groupDisplayName = "WarpDrive",
-			guiFormat = "N2")]
+		[KSPField(isPersistant = false)]
 		internal double drivesTotalPower;
-		[KSPField(isPersistant = false, groupName = "WarpDrive", groupDisplayName = "WarpDrive",
-			guiFormat = "N2")]
+		[KSPField(isPersistant = false)]
 		internal double containmentFieldPowerMax;
-		[KSPField(isPersistant = false, groupName = "WarpDrive", groupDisplayName = "WarpDrive",
-			guiFormat = "N2", guiUnits = "#WD_Units_t")]
+		[KSPField(isPersistant = false)]
 		internal double vesselTotalMass;
-		[KSPField(isPersistant = false, groupName = "WarpDrive", groupDisplayName = "WarpDrive",
-			guiFormat = "N2")]
+		[KSPField(isPersistant = false)]
 		internal double drivesEfficiency;
 
 		private double magnitudeDiff;
@@ -95,7 +86,7 @@ namespace WarpDrive
 		private Vector3d previousPartHeading;
 
 		public double[] warpFactors = { 0.01, 0.016, 0.025, 0.04, 0.063, 0.1, 0.16, 0.25, 0.40, 0.63, 1.0, 1.6, 2.5, 4.0, 6.3, 10, 16, 25, 40, 63, 100, 160, 250, 400, 630, 1000 };
-		// 10 + 1 + 15 = 26
+		
 		public int lowEnergyFactor;
 		public int maximumFactor;
 		private int previousFactor;
@@ -109,9 +100,6 @@ namespace WarpDrive
 		private AudioSource warpSound;
 
 		public override void OnStart(PartModule.StartState state) {
-
-			LogDebug("upgradeStatus", upgradeStatus);
-
 			if (state == StartState.Editor)
 				return;
 
