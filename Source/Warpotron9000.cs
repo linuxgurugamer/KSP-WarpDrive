@@ -33,6 +33,7 @@ namespace WarpDrive
         //private IButton toolbarButton;
         private bool guiVisible;
         private bool maximized;
+        private bool istimewarp;
         private bool refresh;
         private bool globalHidden;
         private Rect windowRect;
@@ -319,16 +320,6 @@ namespace WarpDrive
                 return;
             }
 
-            GUILayout.BeginVertical();
-            Layout.LabelAndText("#WD_currentGravityForce", "#WD_currentGravityForce_t", 
-                masterDrive.currentGravityForce.ToString("N4") + Localizer.Format("#WD_Units_g"));
-            Layout.LabelAndText("#WD_speedRestrictedbyG", "#WD_speedRestrictedbyG_t",
-                masterDrive.speedRestrictedbyG.ToString("N2") + Localizer.Format("#WD_Units_c"));
-            Layout.LabelAndText("#WD_currentSpeedFactor", "#WD_currentSpeedFactor_t",
-                masterDrive.currentSpeedFactor.ToString("N2") + Localizer.Format("#WD_Units_c"));
-            Layout.LabelAndText("#WD_maximumSpeedFactor", "#WD_maximumSpeedFactor_t",
-                masterDrive.maximumSpeedFactor.ToString("N2") + Localizer.Format("#WD_Units_c"));
-
             if (maximized)
             {
                 if (Layout.Button("#WD_Minimize"))
@@ -336,42 +327,65 @@ namespace WarpDrive
                     maximized = false;
                     refresh = true;
                 }
+            }
+            else
+            {
+                if (Layout.Button("#WD_Maximize"))
+                    maximized = true;
+            }
 
-                Layout.LabelAndText("#WD_minimalRequiredEM", "#WD_minimalRequiredEM_t", masterDrive.minimalRequiredEM.ToString("N2"));
-                Layout.LabelAndText("#WD_currentRequiredEM", "#WD_currentRequiredEM_t", masterDrive.requiredForCurrentFactor.ToString("N2"));
+            GUILayout.BeginVertical();
+            if (maximized)
+            {
+                Layout.LabelAndText("#WD_currentGravityForce", "#WD_currentGravityForce_t",
+                    masterDrive.currentGravityForce.ToString("N4") + Localizer.Format("#WD_Units_g"));
+                Layout.LabelAndText("#WD_speedRestrictedbyG", "#WD_speedRestrictedbyG_t",
+                    masterDrive.speedRestrictedbyG.ToString("N2") + Localizer.Format("#WD_Units_c"));
+            }
+
+            Layout.LabelAndText("#WD_currentSpeedFactor", "#WD_currentSpeedFactor_t",
+                masterDrive.currentSpeedFactor.ToString("N2") + Localizer.Format("#WD_Units_c"));
+
+            if (maximized)
+            {
+                Layout.LabelAndText("#WD_maximumSpeedFactor", "#WD_maximumSpeedFactor_t",
+                masterDrive.maximumSpeedFactor.ToString("N2") + Localizer.Format("#WD_Units_c"));
+            }
+
+            Layout.LabelAndText("#WD_currentRequiredEM", "#WD_currentRequiredEM_t", masterDrive.requiredForCurrentFactor.ToString("N2"));
+            Layout.LabelAndText("#WD_minimalRequiredEM", "#WD_minimalRequiredEM_t", masterDrive.minimalRequiredEM.ToString("N2"));
+
+            if (maximized)
+            {
                 Layout.LabelAndText("#WD_maximumRequiredEM", "#WD_maximumRequiredEM_t", masterDrive.requiredForMaximumFactor.ToString("N2"));
                 Layout.LabelAndText("#WD_drivesTotalPower", "#WD_drivesTotalPower_t",   masterDrive.drivesTotalPower.ToString("N1"));
                 Layout.LabelAndText("#WD_containmentFieldPower", "#WD_containmentFieldPower_t", masterDrive.containmentFieldPowerMax.ToString("N1"));
                 Layout.LabelAndText("#WD_vesselTotalMass", "#WD_vesselTotalMass_t", masterDrive.vesselTotalMass.ToString("N2") + Localizer.Format("#WD_Units_t"));
                 Layout.LabelAndText("#WD_drivesEfficiency", "#WD_drivesEfficiency_t", masterDrive.drivesEfficiency.ToString("N2"));
-
-                string s = new string('>', masterDrive.lowEnergyFactor) + "1" +
-                            new string('<', masterDrive.warpFactors.Length - masterDrive.lowEnergyFactor - 1);
-
-                //string s = "1>>>>1>>>>1<<<<1<<<<1<<<<1";
-
-                if (masterDrive.maximumFactor >= masterDrive.currentFactor)
-                    s = s.Substring(0, masterDrive.currentFactor) +
-                        Utils.Colorize(s.Substring(masterDrive.currentFactor, 1), Palette.green, bold:true) +
-                        s.Substring(masterDrive.currentFactor + 1, masterDrive.maximumFactor - masterDrive.currentFactor) +
-                        Utils.Colorize(s.Substring(masterDrive.maximumFactor + 1), Palette.gray50);
-                else
-                    s = s.Substring(0, masterDrive.maximumFactor + 1) +
-                        Utils.Colorize(s.Substring(masterDrive.maximumFactor + 1, masterDrive.currentFactor - masterDrive.maximumFactor - 1), Palette.gray50) +
-                        Utils.Colorize(s.Substring(masterDrive.currentFactor, 1), Palette.red, bold:true) +
-                        Utils.Colorize(s.Substring(masterDrive.currentFactor + 1), Palette.gray50);
-
-                string s_tooltip = 
-                    String.Join(" > ", masterDrive.warpFactors.Where(z => z < 1)) + " > 1 < " + 
-                    String.Join(" < ", masterDrive.warpFactors.Where(z => z > 1));
-
-                Layout.LabelCentered(s, s_tooltip, Palette.blue);
-
-                //				Layout.LabelAndText ("Magnitude Diff", masterDrive.magnitudeDiff.ToString ());
-                //				Layout.LabelAndText ("Magnitude Change", masterDrive.magnitudeChange.ToString ());
+                //	Layout.LabelAndText ("Magnitude Diff", masterDrive.magnitudeDiff.ToString ());
+                //	Layout.LabelAndText ("Magnitude Change", masterDrive.magnitudeChange.ToString ());
             }
-            else if (Layout.Button("#WD_Maximize"))
-                maximized = true;
+
+            string s = new string('>', masterDrive.lowEnergyFactor) + "1" +
+            new string('<', masterDrive.warpFactors.Length - masterDrive.lowEnergyFactor - 1);
+
+            if (masterDrive.maximumFactor >= masterDrive.currentFactor)
+                s = s.Substring(0, masterDrive.currentFactor) +
+                    Utils.Colorize(s.Substring(masterDrive.currentFactor, 1), Palette.green, bold: true) +
+                    s.Substring(masterDrive.currentFactor + 1, masterDrive.maximumFactor - masterDrive.currentFactor) +
+                    Utils.Colorize(s.Substring(masterDrive.maximumFactor + 1), Palette.gray50);
+            else
+                s = s.Substring(0, masterDrive.maximumFactor + 1) +
+                    Utils.Colorize(s.Substring(masterDrive.maximumFactor + 1, masterDrive.currentFactor - masterDrive.maximumFactor - 1), Palette.gray50) +
+                    Utils.Colorize(s.Substring(masterDrive.currentFactor, 1), Palette.red, bold: true) +
+                    Utils.Colorize(s.Substring(masterDrive.currentFactor + 1), Palette.gray50);
+
+            string s_tooltip =
+                String.Join(" > ", masterDrive.warpFactors.Where(z => z < 1)) + " > 1 < " +
+                String.Join(" < ", masterDrive.warpFactors.Where(z => z > 1));
+
+            Layout.LabelCentered(s, s_tooltip, Palette.blue);
+
 
             // a button, that just play alarm sound for no reason
             // probably some unfinished feature
@@ -380,45 +394,40 @@ namespace WarpDrive
 
             if (TimeWarp.CurrentRateIndex == 0)
             {
+                if (istimewarp) refresh = true;
+                istimewarp = false;
+
                 GUILayout.BeginHorizontal();
-                if (Layout.Button("#WD_DecreaseFactor", color:Palette.red)) /*, GUILayout.Width(141)*/
-                {
+                if (Layout.Button("#WD_DecreaseFactor", color: Palette.red))
                     masterDrive.DecreaseFactor();
-                }
-                if (Layout.Button("#WD_IncreaseFactor", color: Palette.green)) /*, GUILayout.Width(141)*/
-                {
+                if (Layout.Button("#WD_IncreaseFactor", color: Palette.green))
                     masterDrive.IncreaseFactor();
-                }
                 GUILayout.EndHorizontal();
-
-                if (Layout.Button("#WD_ReduceFactor", "#WD_ReduceFactor_t", color: Palette.blue))
+                if (maximized)
                 {
-                    masterDrive.ReduceFactor();
+                    if (Layout.Button("#WD_ReduceFactor", "#WD_ReduceFactor_t", color: Palette.blue))
+                        masterDrive.ReduceFactor();
                 }
-
                 if (!masterDrive.inWarp)
                 {
                     if (Layout.Button("#WD_ActivateWarpDrive", color: Palette.green))
-                    {
                         masterDrive.ActivateWarpDrive();
-                    }
                 }
                 else if (Layout.Button("#WD_DeactivateWarpDrive", color: Palette.red))
-                {
                     masterDrive.DeactivateWarpDrive();
-                }
 
                 if (!masterDrive.containmentField)
                 {
                     if (Layout.Button("#WD_ActivateContainmentField", color: Palette.green))
-                    {
                         masterDrive.StartContainment();
-                    }
                 }
                 else if (Layout.Button("#WD_DeactivateContainmentField", color: Palette.red))
-                {
                     masterDrive.StopContainment();
-                }
+            }
+            else
+            {
+                if (!istimewarp) refresh = true;
+                istimewarp = true;
             }
 
             if (Layout.Button("#WD_Close", color:Palette.red))
