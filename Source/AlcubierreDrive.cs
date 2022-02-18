@@ -78,6 +78,12 @@ namespace WarpDrive
 		[KSPField(isPersistant = false)]
 		internal double drivesEfficiency;
 
+		[KSPEvent(guiActive = true, guiName = "#WD_Warpotron9000", groupName = "WarpDrive", groupDisplayName = "WarpDrive")]
+		public void ShowWarpotron9000()
+		{
+			Warpotron9000.Instance.onToggle();
+		}
+
 		private double magnitudeDiff;
 		private double magnitudeChange;
 

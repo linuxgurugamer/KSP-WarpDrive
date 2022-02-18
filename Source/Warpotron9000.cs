@@ -2,22 +2,12 @@
 using UnityEngine;
 using KSP.UI.Screens;
 using KSP.IO;
-using ToolbarControl_NS;
 using KSP.Localization;
 using System.Linq;
 
 
 namespace WarpDrive
 {
-    [KSPAddon(KSPAddon.Startup.MainMenu, true)]
-    public class RegisterToolbar : MonoBehaviour
-    {
-        void Start()
-        {
-            ToolbarControl.RegisterMod(Warpotron9000.MODID, Warpotron9000.MODNAME);
-        }
-    }
-
     [KSPAddon(KSPAddon.Startup.Flight, false)]
     public class Warpotron9000 : MonoBehaviour
     {
@@ -28,7 +18,6 @@ namespace WarpDrive
         private StandAloneAlcubierreDrive masterDrive;
 
         // GUI stuff
-        ToolbarControl toolbarControl;
         //private ApplicationLauncherButton appLauncherButton;
         //private IButton toolbarButton;
         private bool guiVisible;
@@ -99,7 +88,6 @@ namespace WarpDrive
             GameEvents.onGameUnpause.Remove(onGameUnpause);
 
             UnlockControls();
-            DestroyLauncher();
 
             config.SetValue("windowRect", windowRect);
             //config.SetValue("useToolbar", useToolbar);
@@ -129,7 +117,6 @@ namespace WarpDrive
         {
             onVesselChange(FlightGlobals.ActiveVessel);
         }
-
         public void onGamePause()
         {
             gamePaused = true;
@@ -156,40 +143,12 @@ namespace WarpDrive
         {
             Logging.LogDebug("onVesselChange");
             var drives = vessel.FindPartModulesImplementing<StandAloneAlcubierreDrive>();
-
-            if (drives.Count == 0)
-            {
-                if (toolbarControl != null)
-                {
-                    Logging.Log("No WarpDrive Detected, Warpatron 9000 is removed");
-
-                    toolbarControl.SetFalse();
-
-                    toolbarControl.OnDestroy();
-                    Destroy(toolbarControl);
-                    toolbarControl = null;
-                }
-            }
-            else
+            
+            if (drives.Count != 0)
             {
                 masterDrive = drives.Find(t => !t.isSlave);
-
-                if (toolbarControl == null)
-                {
-                    Logging.Log("WarpDrive Detected, Warpatron 9000 is created");
-
-                    toolbarControl = gameObject.AddComponent<ToolbarControl>();
-                    toolbarControl.AddToAllToolbars(onAppTrue, onAppFalse,
-                        ApplicationLauncher.AppScenes.FLIGHT | ApplicationLauncher.AppScenes.MAPVIEW,
-                        MODID,
-                        "waButton",
-                        "WarpDrive/Textures/warpdrive-icon",
-                        "WarpDrive/Textures/warpdrive-icon"
-                    );
-                }
             }
         }
-
         public void onAppTrue()
         {
             guiVisible = true;
@@ -252,27 +211,6 @@ namespace WarpDrive
             
         }
 #endif
-
-        private void DestroyLauncher()
-        {
-#if false
-			if (appLauncherButton != null) {
-				ApplicationLauncher.Instance.RemoveModApplication (appLauncherButton);
-				appLauncherButton = null;
-			}
-
-			if (toolbarButton != null) {
-				toolbarButton.Destroy ();
-				toolbarButton = null;
-			}
-#endif
-            if (toolbarControl != null)
-            {
-                toolbarControl.OnDestroy();
-                Destroy(toolbarControl);
-            }
-
-        }
 
         public void Update()
         {
@@ -430,8 +368,8 @@ namespace WarpDrive
                 istimewarp = true;
             }
 
-            if (Layout.Button("#WD_Close", color:Palette.red))
-                toolbarControl.SetFalse();
+            if (Layout.Button("#WD_Close", color: Palette.red))
+                onAppFalse();
 
             if (HighLogic.CurrentGame.Parameters.CustomParams<WarpDrive>().tooltip)
             {
