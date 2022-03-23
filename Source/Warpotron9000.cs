@@ -1,22 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
 using UnityEngine;
 using KSP.UI.Screens;
 using KSP.IO;
-using ToolbarControl_NS;
+using KSP.Localization;
+using System.Linq;
 
 
 namespace WarpDrive
 {
-    [KSPAddon(KSPAddon.Startup.MainMenu, true)]
-    public class RegisterToolbar : MonoBehaviour
-    {
-        void Start()
-        {
-            ToolbarControl.RegisterMod(Warpotron9000.MODID, Warpotron9000.MODNAME);
-        }
-    }
-
     [KSPAddon(KSPAddon.Startup.Flight, false)]
     public class Warpotron9000 : MonoBehaviour
     {
@@ -27,17 +18,21 @@ namespace WarpDrive
         private StandAloneAlcubierreDrive masterDrive;
 
         // GUI stuff
-        ToolbarControl toolbarControl;
         //private ApplicationLauncherButton appLauncherButton;
         //private IButton toolbarButton;
         private bool guiVisible;
         private bool maximized;
+        private bool istimewarp;
         private bool refresh;
         private bool globalHidden;
         private Rect windowRect;
         private int guiId;
         //private bool useToolbar;
         private const ulong lockMask = 900719925474097919;
+
+        public string ToolTip;
+        public bool ToolTipActive;
+        public string lastTooltip = " ";
 
         /// <summary>
         /// Kinda constructor
@@ -70,7 +65,7 @@ namespace WarpDrive
             //useToolbar = config.GetValue<bool>("useToolbar", false);
             maximized = config.GetValue<bool>("maximized", false);
 
-            GameEvents.onGUIApplicationLauncherReady.Add(onGUIApplicationLauncherReady);
+            //GameEvents.onGUIApplicationLauncherReady.Add(onGUIApplicationLauncherReady);
             GameEvents.onLevelWasLoaded.Add(onLevelWasLoaded);
             GameEvents.onVesselChange.Add(onVesselChange);
             GameEvents.onHideUI.Add(onHideUI);
@@ -84,7 +79,7 @@ namespace WarpDrive
         /// </summary>
         public void OnDestroy()
         {
-            GameEvents.onGUIApplicationLauncherReady.Remove(onGUIApplicationLauncherReady);
+            //GameEvents.onGUIApplicationLauncherReady.Remove(onGUIApplicationLauncherReady);
             GameEvents.onLevelWasLoaded.Remove(onLevelWasLoaded);
             GameEvents.onVesselChange.Remove(onVesselChange);
             GameEvents.onHideUI.Remove(onHideUI);
@@ -93,7 +88,6 @@ namespace WarpDrive
             GameEvents.onGameUnpause.Remove(onGameUnpause);
 
             UnlockControls();
-            DestroyLauncher();
 
             config.SetValue("windowRect", windowRect);
             //config.SetValue("useToolbar", useToolbar);
@@ -114,16 +108,15 @@ namespace WarpDrive
             InputLockManager.RemoveControlLock(this.name);
         }
 
-        public void onGUIApplicationLauncherReady()
-        {
-            CreateLauncher();
-        }
+        //public void onGUIApplicationLauncherReady()
+        //{
+        //    CreateLauncher();
+        //}
 
         public void onLevelWasLoaded(GameScenes scene)
         {
             onVesselChange(FlightGlobals.ActiveVessel);
         }
-
         public void onGamePause()
         {
             gamePaused = true;
@@ -148,9 +141,14 @@ namespace WarpDrive
 
         public void onVesselChange(Vessel vessel)
         {
-            masterDrive = vessel.FindPartModulesImplementing<StandAloneAlcubierreDrive>().Find(t => !t.isSlave);
+            Logging.LogDebug("onVesselChange");
+            var drives = vessel.FindPartModulesImplementing<StandAloneAlcubierreDrive>();
+            
+            if (drives.Count != 0)
+            {
+                masterDrive = drives.Find(t => !t.isSlave);
+            }
         }
-
         public void onAppTrue()
         {
             guiVisible = true;
@@ -174,6 +172,7 @@ namespace WarpDrive
         internal const string MODID = "AppLaunch";
         internal const string MODNAME = "Warpotron9000";
 
+#if false
         private void CreateLauncher()
         {
 #if false
@@ -198,40 +197,20 @@ namespace WarpDrive
 					GameDatabase.Instance.GetTexture ("WarpDrive/Textures/warpdrive-icon", false)
 				);
 #endif
-            if (toolbarControl == null)
-            {
-                toolbarControl = gameObject.AddComponent<ToolbarControl>();
-                toolbarControl.AddToAllToolbars(onAppTrue, onAppFalse,
-                    ApplicationLauncher.AppScenes.FLIGHT | ApplicationLauncher.AppScenes.MAPVIEW,
-                    MODID,
-                    "waButton",
-                    "WarpDrive/Textures/warpdrive-icon",
-                    "WarpDrive/Textures/warpdrive-icon"
-                );
-
-            }
+                if (toolbarControl == null)
+                {
+                    toolbarControl = gameObject.AddComponent<ToolbarControl>();
+                    toolbarControl.AddToAllToolbars(onAppTrue, onAppFalse,
+                        ApplicationLauncher.AppScenes.FLIGHT | ApplicationLauncher.AppScenes.MAPVIEW,
+                        MODID,
+                        "waButton",
+                        "WarpDrive/Textures/warpdrive-icon",
+                        "WarpDrive/Textures/warpdrive-icon"
+                    );
+                }
+            
         }
-
-        private void DestroyLauncher()
-        {
-#if false
-			if (appLauncherButton != null) {
-				ApplicationLauncher.Instance.RemoveModApplication (appLauncherButton);
-				appLauncherButton = null;
-			}
-
-			if (toolbarButton != null) {
-				toolbarButton.Destroy ();
-				toolbarButton = null;
-			}
 #endif
-            if (toolbarControl != null)
-            {
-                toolbarControl.OnDestroy();
-                Destroy(toolbarControl);
-            }
-
-        }
 
         public void Update()
         {
@@ -254,10 +233,12 @@ namespace WarpDrive
                 guiId,
                 windowRect,
                 DrawGUI,
-                "Warpotron 9000",
+                Localizer.Format("#WD_Warpotron9000"),
                 GUILayout.ExpandWidth(true),
                 GUILayout.ExpandHeight(true)
             );
+
+            
 
             if (windowRect.Contains(Event.current.mousePosition))
             {
@@ -277,83 +258,132 @@ namespace WarpDrive
                 return;
             }
 
-            GUILayout.BeginVertical();
-            Layout.LabelAndText("Upgrade Status", masterDrive.isUpgraded ? "Butterfly" : "Snail");
-            Layout.LabelAndText("Current Gravity Force", masterDrive.gravityPull.ToString("F3") + " g");
-            Layout.LabelAndText("Speed Restricted by G", masterDrive.speedLimit.ToString("F3") + " C");
-            Layout.LabelAndText("Current Speed Factor", masterDrive.SelectedSpeed.ToString("F3") + " C");
-            Layout.LabelAndText("Maximum Speed Factor", masterDrive.MaxAllowedSpeed.ToString("F3") + " C");
-
             if (maximized)
             {
-                if (Layout.Button("Minimize"))
+                if (Layout.Button("#WD_Minimize"))
                 {
                     maximized = false;
                     refresh = true;
                 }
-
-                Layout.LabelAndText("Minimal Required EM", masterDrive.minimumRequiredExoticMatter.ToString("F3"));
-                Layout.LabelAndText("Current Required EM", masterDrive.requiredForCurrentFactor.ToString("F3"));
-                Layout.LabelAndText("Maximum Required EM", masterDrive.requiredForMaximumFactor.ToString("F3"));
-
-                Layout.LabelAndText("Current Drives Power", masterDrive.drivesTotalPower.ToString("F3"));
-                Layout.LabelAndText("Vessel Total Mass", masterDrive.vessel.totalMass.ToString("F3") + " tons");
-                Layout.LabelAndText("Drives Efficiency", masterDrive.drivesEfficiencyRatio.ToString("F3"));
-
-                //				Layout.LabelAndText ("Magnitude Diff", masterDrive.magnitudeDiff.ToString ());
-                //				Layout.LabelAndText ("Magnitude Change", masterDrive.magnitudeChange.ToString ());
             }
-            else if (Layout.Button("Maximize"))
-                maximized = true;
+            else
+            {
+                if (Layout.Button("#WD_Maximize"))
+                    maximized = true;
+            }
 
-            if (Layout.Button("alarm"))
-                masterDrive.PlayAlarm();
+            GUILayout.BeginVertical();
+            if (maximized)
+            {
+                Layout.LabelAndText("#WD_currentGravityForce", "#WD_currentGravityForce_t",
+                    masterDrive.currentGravityForce.ToString("N4") + Localizer.Format("#WD_Units_g"));
+                Layout.LabelAndText("#WD_speedRestrictedbyG", "#WD_speedRestrictedbyG_t",
+                    masterDrive.speedRestrictedbyG.ToString("N2") + Localizer.Format("#WD_Units_c"));
+            }
+
+            Layout.LabelAndText("#WD_currentSpeedFactor", "#WD_currentSpeedFactor_t",
+                masterDrive.currentSpeedFactor.ToString("N2") + Localizer.Format("#WD_Units_c"));
+
+            if (maximized)
+            {
+                Layout.LabelAndText("#WD_maximumSpeedFactor", "#WD_maximumSpeedFactor_t",
+                masterDrive.maximumSpeedFactor.ToString("N2") + Localizer.Format("#WD_Units_c"));
+            }
+
+            Layout.LabelAndText("#WD_currentRequiredEM", "#WD_currentRequiredEM_t", masterDrive.requiredForCurrentFactor.ToString("N2"));
+            Layout.LabelAndText("#WD_minimalRequiredEM", "#WD_minimalRequiredEM_t", masterDrive.minimalRequiredEM.ToString("N2"));
+
+            if (maximized)
+            {
+                Layout.LabelAndText("#WD_maximumRequiredEM", "#WD_maximumRequiredEM_t", masterDrive.requiredForMaximumFactor.ToString("N2"));
+                Layout.LabelAndText("#WD_drivesTotalPower", "#WD_drivesTotalPower_t",   masterDrive.drivesTotalPower.ToString("N1"));
+                Layout.LabelAndText("#WD_containmentFieldPower", "#WD_containmentFieldPower_t", masterDrive.containmentFieldPowerMax.ToString("N1"));
+                Layout.LabelAndText("#WD_vesselTotalMass", "#WD_vesselTotalMass_t", masterDrive.vesselTotalMass.ToString("N2") + Localizer.Format("#WD_Units_t"));
+                Layout.LabelAndText("#WD_drivesEfficiency", "#WD_drivesEfficiency_t", masterDrive.drivesEfficiency.ToString("N2"));
+                //	Layout.LabelAndText ("Magnitude Diff", masterDrive.magnitudeDiff.ToString ());
+                //	Layout.LabelAndText ("Magnitude Change", masterDrive.magnitudeChange.ToString ());
+            }
+
+            string s = new string('>', masterDrive.lowEnergyFactor) + "1" +
+            new string('<', masterDrive.warpFactors.Length - masterDrive.lowEnergyFactor - 1);
+
+            if (masterDrive.maximumFactor >= masterDrive.currentFactor)
+                s = s.Substring(0, masterDrive.currentFactor) +
+                    Utils.Colorize(s.Substring(masterDrive.currentFactor, 1), Palette.green, bold: true) +
+                    s.Substring(masterDrive.currentFactor + 1, masterDrive.maximumFactor - masterDrive.currentFactor) +
+                    Utils.Colorize(s.Substring(masterDrive.maximumFactor + 1), Palette.gray50);
+            else
+                s = s.Substring(0, masterDrive.maximumFactor + 1) +
+                    Utils.Colorize(s.Substring(masterDrive.maximumFactor + 1, masterDrive.currentFactor - masterDrive.maximumFactor - 1), Palette.gray50) +
+                    Utils.Colorize(s.Substring(masterDrive.currentFactor, 1), Palette.red, bold: true) +
+                    Utils.Colorize(s.Substring(masterDrive.currentFactor + 1), Palette.gray50);
+
+            string s_tooltip =
+                String.Join(" > ", masterDrive.warpFactors.Where(z => z < 1)) + " > 1 < " +
+                String.Join(" < ", masterDrive.warpFactors.Where(z => z > 1));
+
+            Layout.LabelCentered(s, s_tooltip, Palette.blue);
+
+
+            // a button, that just play alarm sound for no reason
+            // probably some unfinished feature
+            //if (Layout.Button("alarm"))
+            //    masterDrive.PlayAlarm();
 
             if (TimeWarp.CurrentRateIndex == 0)
             {
+                if (istimewarp) refresh = true;
+                istimewarp = false;
+
                 GUILayout.BeginHorizontal();
-                if (Layout.Button("Decrease Factor", Palette.red, GUILayout.Width(141)))
-                {
+                if (Layout.Button("#WD_DecreaseFactor", color: Palette.red))
                     masterDrive.DecreaseFactor();
-                }
-                if (Layout.Button("Increase Factor", Palette.green, GUILayout.Width(141)))
-                {
+                if (Layout.Button("#WD_IncreaseFactor", color: Palette.green))
                     masterDrive.IncreaseFactor();
-                }
                 GUILayout.EndHorizontal();
-
-                if (Layout.Button("Reduce Factor", Palette.blue))
+                if (maximized)
                 {
-                    masterDrive.ReduceFactor();
+                    if (Layout.Button("#WD_ReduceFactor", "#WD_ReduceFactor_t", color: Palette.blue))
+                        masterDrive.ReduceFactor();
                 }
-
                 if (!masterDrive.inWarp)
                 {
-                    if (Layout.Button("Activate Warp Drive", Palette.green))
-                    {
+                    if (Layout.Button("#WD_ActivateWarpDrive", color: Palette.green))
                         masterDrive.ActivateWarpDrive();
-                    }
                 }
-                else if (Layout.Button("Deactivate Warp Drive", Palette.red))
-                {
+                else if (Layout.Button("#WD_DeactivateWarpDrive", color: Palette.red))
                     masterDrive.DeactivateWarpDrive();
-                }
 
                 if (!masterDrive.containmentField)
                 {
-                    if (Layout.Button("Activate Containment Field", Palette.green))
-                    {
+                    if (Layout.Button("#WD_ActivateContainmentField", color: Palette.green))
                         masterDrive.StartContainment();
-                    }
                 }
-                else if (Layout.Button("Deactivate Containment Field", Palette.red))
-                {
+                else if (Layout.Button("#WD_DeactivateContainmentField", color: Palette.red))
                     masterDrive.StopContainment();
+            }
+            else
+            {
+                if (!istimewarp) refresh = true;
+                istimewarp = true;
+            }
+
+            if (Layout.Button("#WD_Close", color: Palette.red))
+                onAppFalse();
+
+            if (HighLogic.CurrentGame.Parameters.CustomParams<WarpDrive>().tooltip)
+            {
+                // on the next tick, read lastTooltip
+                if (!String.IsNullOrWhiteSpace(lastTooltip))
+                    Layout.Label(lastTooltip, color:Palette.blue);
+
+                if (Event.current.type == EventType.Repaint && GUI.tooltip != lastTooltip)
+                {
+                    lastTooltip = GUI.tooltip;
+                    refresh = true;
                 }
             }
 
-            if (Layout.Button("Close", Palette.red))
-                toolbarControl.SetFalse();
 #if false
             if (appLauncherButton != null)
                     appLauncherButton.SetFalse();

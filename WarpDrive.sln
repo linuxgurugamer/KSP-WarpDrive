@@ -16,6 +16,20 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		WarpDrive.version = WarpDrive.version
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Parts", "Parts", "{856CDFD3-747C-48E0-A52A-50854A3FEEFE}"
+	ProjectSection(SolutionItems) = preProject
+		GameData\WarpDrive\Patches\B9PartSwitch.cfg = GameData\WarpDrive\Patches\B9PartSwitch.cfg
+		GameData\WarpDrive\Patches\CTT.cfg = GameData\WarpDrive\Patches\CTT.cfg
+		GameData\WarpDrive\Patches\PartUpgrades.cfg = GameData\WarpDrive\Patches\PartUpgrades.cfg
+		GameData\WarpDrive\Parts\WarpDrive\WarpDrive-50.cfg = GameData\WarpDrive\Parts\WarpDrive\WarpDrive-50.cfg
+		GameData\WarpDrive\Parts\WarpDrive\WarpDrive.cfg = GameData\WarpDrive\Parts\WarpDrive\WarpDrive.cfg
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Localization", "Localization", "{B1190750-25C9-469D-92B9-9534DF9D23DE}"
+	ProjectSection(SolutionItems) = preProject
+		GameData\WarpDrive\Localization\en-us.cfg = GameData\WarpDrive\Localization\en-us.cfg
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
