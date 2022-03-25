@@ -1,16 +1,17 @@
-﻿using System;
+﻿using Expansions.Missions.Adjusters;
+using KSP.Localization;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
+using static WarpDrive.Logging;
 
 namespace WarpDrive
 {
-	public class StandAloneAlcubierreDrive: PartModule
+	public class StandAloneAlcubierreDrive: PartModule, IModuleInfo
 	{
 		[KSPField(isPersistant = true)]
 		internal bool inWarp;
-
-		[KSPField(isPersistant = true, guiActive = true, guiName = "Upgraded")]
-		internal bool isUpgraded;
 
 		[KSPField(isPersistant = true)]
 		internal int currentFactor = -1;
@@ -30,31 +31,58 @@ namespace WarpDrive
 		[KSPField(isPersistant = false)]
 		public float outerRadius;
 
-		[KSPField(isPersistant = false)]
-		public string upgradeTechReq;
-
-		[KSPField(isPersistant = true)]
-		public bool launched = false;
-
 		private PartResourceDefinition emResource;
 		private PartResourceDefinition ecResource;
+
+		double baseEMdecay = 100;
+		double baseEMproduce = 0.01;
+		double baseECconsume = 100;
 
 		private List<StandAloneAlcubierreDrive> alcubierreDrives;
 		private WarpFX fx;
 
+
 		private bool alarm = false;
-
 		internal int instanceId;
-
 		internal bool isSlave;
 
-		internal double gravityPull;
-		internal double speedLimit;
-		internal double drivesTotalPower;
-		internal double drivesEfficiencyRatio;
-		internal double minimumRequiredExoticMatter;
+
+		[KSPField(isPersistant = false, guiActive = true, guiName = "#WD_upgradeStatus", groupName = "WarpDrive", groupDisplayName = "WarpDrive")]
+		public string upgradeStatus;
+		[KSPField(isPersistant = false, guiActive = true, guiName = "#WD_drivePower", groupName = "WarpDrive", groupDisplayName = "WarpDrive")]
+		public float drivePower;
+		[KSPField(isPersistant = false, guiActive = true, guiName = "#WD_containmentFieldPower", groupName = "WarpDrive", groupDisplayName = "WarpDrive")]
+		public float containmentFieldPower;
+		
+
+		[KSPField(isPersistant = false)]
+		internal double currentGravityForce;
+		[KSPField(isPersistant = false)]
+		internal double speedRestrictedbyG;
+		[KSPField(isPersistant = false)]
+		internal double currentSpeedFactor;
+		[KSPField(isPersistant = false)]
+		internal double maximumSpeedFactor;
+		[KSPField(isPersistant = false)]
+		internal double minimalRequiredEM;
+		[KSPField(isPersistant = false)]
 		internal double requiredForCurrentFactor;
+		[KSPField(isPersistant = false)]
 		internal double requiredForMaximumFactor;
+		[KSPField(isPersistant = false)]
+		internal double drivesTotalPower;
+		[KSPField(isPersistant = false)]
+		internal double containmentFieldPowerMax;
+		[KSPField(isPersistant = false)]
+		internal double vesselTotalMass;
+		[KSPField(isPersistant = false)]
+		internal double drivesEfficiency;
+
+		[KSPEvent(guiActive = true, guiName = "#WD_Warpotron9000", groupName = "WarpDrive", groupDisplayName = "WarpDrive")]
+		public void ShowWarpotron9000()
+		{
+			Warpotron9000.Instance.onToggle();
+		}
 
 		private double magnitudeDiff;
 		private double magnitudeChange;
@@ -63,10 +91,10 @@ namespace WarpDrive
 		private Vector3d warpVector;
 		private Vector3d previousPartHeading;
 
-		private double[] warpFactors = { 0.01, 0.016, 0.025, 0.04, 0.063, 0.1, 0.16, 0.25, 0.40, 0.63, 1.0, 1.6, 2.5, 4.0, 6.3, 10, 16, 25, 40, 63, 100, 160, 250, 400, 630, 1000 };
-
-		private int lowEnergyFactor;
-		private int maximumFactor;
+		public double[] warpFactors = { 0.01, 0.016, 0.025, 0.04, 0.063, 0.1, 0.16, 0.25, 0.40, 0.63, 1.0, 1.6, 2.5, 4.0, 6.3, 10, 16, 25, 40, 63, 100, 160, 250, 400, 630, 1000 };
+		
+		public int lowEnergyFactor;
+		public int maximumFactor;
 		private int previousFactor;
 
 		private bool vesselWasInOuterspace;
@@ -77,72 +105,74 @@ namespace WarpDrive
 		private AudioSource alarmSound;
 		private AudioSource warpSound;
 
-		internal double SelectedSpeed {
-			get { return warpFactors [currentFactor]; }
-		}
-
-		internal double MaxAllowedSpeed {
-			get { return warpFactors [maximumFactor]; }
-		}
-
 		public override void OnStart(PartModule.StartState state) {
 			if (state == StartState.Editor)
 				return;
 
-			emResource = PartResourceLibrary.Instance.GetDefinition ("ExoticMatter");
-			ecResource = PartResourceLibrary.Instance.GetDefinition ("ElectricCharge");
+			Init();
+		}
 
-			instanceId = GetInstanceID ();
+		private void Init()
+		{
+			LogDebug("Init()");
+			emResource = PartResourceLibrary.Instance.GetDefinition("ExoticMatter");
+			ecResource = PartResourceLibrary.Instance.GetDefinition("ElectricCharge");
 
-			if(!launched) {
-				if (Utils.hasTech (upgradeTechReq)) {
-					isUpgraded = true;
+			instanceId = GetInstanceID();
+
+			if (!isSlave)
+			{
+				alcubierreDrives = part.vessel.FindPartModulesImplementing<StandAloneAlcubierreDrive>();
+				foreach (var drive in alcubierreDrives)
+				{
+					if (drive.GetInstanceID() != instanceId)
+					{
+						drive.isSlave = true;
+					}
 				}
-				launched = true;
+			}
+			else
+			{
+				LogDebug("Init(), the drive is slave, stop");
+				return;
 			}
 
-			lowEnergyFactor = warpFactors.IndexOf (1.0f);
+			lowEnergyFactor = warpFactors.IndexOf(1.0f);
+
 			if (currentFactor == -1)
 				currentFactor = lowEnergyFactor;
 
 			previousFactor = currentFactor;
 
-			if (!isSlave) {
-				alcubierreDrives = part.vessel.FindPartModulesImplementing<StandAloneAlcubierreDrive> ();
-				foreach (var drive in alcubierreDrives) {
-					if (drive.GetInstanceID() != instanceId)
-						drive.isSlave = true;
-				}
-			}
-
-			if (isSlave)
-				return;
-
 			fx = new WarpFX(this);
 			if (inWarp)
-				fx.StartFX ();
+				fx.StartFX();
 
 			if (serialisedWarpVector != null)
-				warpVector = ConfigNode.ParseVector3D (serialisedWarpVector);
+				warpVector = ConfigNode.ParseVector3D(serialisedWarpVector);
 
 			if (lastTime == 0)
-				lastTime = Planetarium.GetUniversalTime ();
+				lastTime = Planetarium.GetUniversalTime();
 
 			// If we were somewhere else, let's compensate EM production
-			CompensateEM ();
+			CompensateEM();
 			sceneLoaded = false;
-			GameEvents.onLevelWasLoaded.Add (onLevelWasLoaded);
+			GameEvents.onLevelWasLoaded.Add(onLevelWasLoaded);
 
-			LoadMedia ();
+			LoadMedia();
 
-			if (containmentField && !inWarp) {
-				containmentSound.Play ();
+			if (containmentField && !inWarp)
+			{
+				containmentSound.Play();
 				containmentSound.loop = true;
 			}
 
-			if (inWarp) {
-				warpSound.Play ();
+			if (inWarp)
+			{
+				warpSound.Play();
 			}
+
+			LogDebug("Init() End");
 		}
 
 		public void onLevelWasLoaded(GameScenes gameScene) {
@@ -167,24 +197,26 @@ namespace WarpDrive
 			if (isSlave || HighLogic.LoadedSceneIsEditor)
 				return;
 
-			gravityPull = FlightGlobals.getGeeForceAtPosition(vessel.GetWorldPos3D()).magnitude;
-			speedLimit = vessel.mainBody.flightGlobalsIndex != 0
-				? 1 / (Math.Max(gravityPull - 0.006, 0.001) * 10)
-				: 1 / gravityPull;
+			containmentFieldPowerMax = alcubierreDrives.Max(z => z.containmentFieldPower);
+			drivesTotalPower = alcubierreDrives.Sum(z => z.drivePower);
+			vesselTotalMass = vessel.totalMass;
+			drivesEfficiency = drivesTotalPower / vessel.totalMass;
+			minimalRequiredEM = 100 * vessel.totalMass / drivesEfficiency;
 
-			if (speedLimit > warpFactors [warpFactors.Length - 1])
-				speedLimit = warpFactors [warpFactors.Length - 1];
+			currentGravityForce = FlightGlobals.getGeeForceAtPosition(vessel.GetWorldPos3D()).magnitude;
 
-			maximumFactor = GetMaximumFactor(speedLimit);
+			speedRestrictedbyG = vessel.mainBody.flightGlobalsIndex != 0
+				? 1 / (Math.Max(currentGravityForce - 0.006, 0.001) * 10)
+				: 1 / currentGravityForce;
 
-			drivesTotalPower = 0;
-			for (int i = 0; i < alcubierreDrives.Count; i++)
-				drivesTotalPower += alcubierreDrives [i].part.mass * (alcubierreDrives [i].isUpgraded ? 20 : 10);
-			
-			drivesEfficiencyRatio = drivesTotalPower / vessel.totalMass;
+			if (speedRestrictedbyG > warpFactors [warpFactors.Length - 1])
+				speedRestrictedbyG = warpFactors [warpFactors.Length - 1];
 
-			minimumRequiredExoticMatter = 100 * vessel.totalMass / drivesEfficiencyRatio;
+			maximumFactor = GetMaximumFactor(speedRestrictedbyG);
 
+			currentSpeedFactor = warpFactors[currentFactor];
+			maximumSpeedFactor = warpFactors[maximumFactor];
+		
 			requiredForCurrentFactor = GetExoticMatterRequired(warpFactors[currentFactor]);
 			requiredForMaximumFactor = GetExoticMatterRequired(warpFactors[maximumFactor]);
 
@@ -214,28 +246,28 @@ namespace WarpDrive
 
 			// Decay exotic matter
 			if (!containmentField) {
-				vessel.RequestResource (part, emResource.id, 100 * timeDelta, true);
+				vessel.RequestResource (part, emResource.id, containmentFieldPowerMax * baseEMdecay * timeDelta, true);
 				return;
 			}
 
-			double ecReturned = vessel.RequestResource (part, ecResource.id, 100 * timeDelta, true);
+			double ecReturned = vessel.RequestResource (part, ecResource.id, containmentFieldPowerMax * baseECconsume * timeDelta, true);
 
 			// No EC, shutdown containment field
 			if (ecReturned == 0) {
-				ScreenMessages.PostScreenMessage ("Not enough EC for stable containment field!", 7.0f);
-				ScreenMessages.PostScreenMessage ("Containment field is off, EM will decay!", 7.0f);
+				ScreenMessages.PostScreenMessage (Localizer.Format("#WD_ContainmentFieldNotEnoughECtoStable"), 7.0f);
+				ScreenMessages.PostScreenMessage (Localizer.Format("#WD_ContainmentFieldOff"), 7.0f);
 				StopContainment ();
 			} else
-				vessel.RequestResource (part, emResource.id, -0.01 * timeDelta, true);
+				vessel.RequestResource (part, emResource.id, -1 * containmentFieldPowerMax * baseEMproduce * timeDelta, true);
 		}
 
 		public void UpdateWarpSpeed() {
-			if (!inWarp || minimumRequiredExoticMatter <= 0) return;
+			if (!inWarp || minimalRequiredEM <= 0) return;
 
 			// Check this out
 			if (this.vessel.altitude < this.vessel.mainBody.atmosphereDepth * 3) {
 				if (vesselWasInOuterspace) {
-					ScreenMessages.PostScreenMessage ("Atmosphere is too close! Dropping out of warp!", 7.0f);
+					ScreenMessages.PostScreenMessage (Localizer.Format("#WD_AtmOutOfWarp"), 7.0f);
 					alarm = true;
 					DeactivateWarpDrive ();
 					return;
@@ -258,12 +290,12 @@ namespace WarpDrive
 			if (gravityDisbalance) {
 				currentFactor = maximumFactor;
 				if (currentFactor < lowEnergyFactor) {
-					ScreenMessages.PostScreenMessage ("Gravity too strong, dropping out of warp!", 7.0f);
+					ScreenMessages.PostScreenMessage (Localizer.Format("#WD_GravityOutOfWarp"), 7.0f);
 					alarm = true;
 					DeactivateWarpDrive ();
 					return;
 				}
-				ScreenMessages.PostScreenMessage ("Gravity pull increased, speed dropped down!", 7.0f);
+				ScreenMessages.PostScreenMessage (Localizer.Format("#WD_GravitySpeedDroppedDown"), 7.0f);
 			}
 
 			if (gravityDisbalance || headingChanged || factorChanged) {
@@ -301,50 +333,49 @@ namespace WarpDrive
 
 			if (availableExoticMatter < emDiff)
 			{
-				ScreenMessages.PostScreenMessage("Not enough Exotic Matter to change warp factor!", 7.0f);
+				ScreenMessages.PostScreenMessage(Localizer.Format("#WD_WarpNotEnoughEMToChange"), 7.0f);
 				return false;
 			}
 			if (emDiff > 0) {
 				part.RequestResource ("ExoticMatter", emDiff);
-				ScreenMessages.PostScreenMessage (emDiff.ToString ("F3") + " Exotic Matter consumed!", 7.0f);
+				ScreenMessages.PostScreenMessage (Localizer.Format("#WD_EMConsumed", emDiff.ToString ("F2")), 7.0f);
 			}
 			return true;
 		}
 
-		public void ActivateWarpDrive() {
+		public bool ActivateWarpDrive() {
 			if (inWarp)
-				return;
+				return false;
 
 			if (this.vessel.altitude <= getMaxAtmosphericAltitude(this.vessel.mainBody) &&
 				this.vessel.mainBody.flightGlobalsIndex != 0)
 			{
-				ScreenMessages.PostScreenMessage ("Cannot activate warp drive within the atmosphere!", 7.0f);
-				return;
+				ScreenMessages.PostScreenMessage (Localizer.Format("#WD_AtmCannotWarp"), 7.0f);
+				return false;
 			}
 
-			if (drivesEfficiencyRatio < 1)
+			if (drivesEfficiency < 1)
 			{
-				ScreenMessages.PostScreenMessage ("Not enough drives power to initiate warp!", 7.0f);
-				return;
+				ScreenMessages.PostScreenMessage (Localizer.Format("#WD_WarpNotEnoughDrivesPower"), 7.0f);
+				return false;
 			}
-
-			double availableExoticMatter;
-			double maxExoticMatter;
 
 			part.GetConnectedResourceTotals
 			(
 				emResource.id,
-				out availableExoticMatter,
-				out maxExoticMatter
+				out double availableExoticMatter,
+				out double maxExoticMatter
 			);
 
 			if (availableExoticMatter < requiredForCurrentFactor)
 			{
-				ScreenMessages.PostScreenMessage("Not enough Exotic Matter to initiate warp!", 7.0f);
-				return;
+				ScreenMessages.PostScreenMessage(Localizer.Format("#WD_WarpNotEnoughEM"), 7.0f);
+				return false;
 			}
 
 			InitiateWarp ();
+
+			return true;
 		}
 
 		private void InitiateWarp() {
@@ -368,9 +399,9 @@ namespace WarpDrive
 			warpSound.Play ();
 		}
 
-		public void DeactivateWarpDrive() {
+		public bool DeactivateWarpDrive() {
 			if (!inWarp)
-				return;
+				return false;
 
 			vessel.GoOnRails();
 			vessel.orbit.UpdateFromStateVectors(vessel.orbit.pos, vessel.orbit.vel - warpVector, vessel.orbit.referenceBody, Planetarium.GetUniversalTime());
@@ -380,24 +411,33 @@ namespace WarpDrive
 			warpSound.Stop ();
 			if (containmentField)
 				containmentSound.Play ();
+			return true;
 		}
 
-		public void StartContainment() {
+		public bool StartContainment() {
 			double ecProduction = Utils.CalculateSolarPower (vessel) + Utils.CalculateOtherPower (vessel);
-			if (ecProduction < 100) {
-				ScreenMessages.PostScreenMessage ("Not enough EC production to create stable containment field!", 7.0f);
-				return;
+			if (ecProduction < containmentFieldPowerMax * 100) {
+				ScreenMessages.PostScreenMessage (
+					Localizer.Format("#WD_ContainmentFieldNotEnoughECtoCreate", (containmentFieldPowerMax * 100).ToString("F0")), 
+					7.0f);
+				return false;
 			}
 			containmentField = true;
 			lastTime = Planetarium.GetUniversalTime ();
 			containmentSound.Play ();
 			containmentSound.loop = true;
+
+			return true;
 		}
 
-		public void StopContainment() {
+		public bool StopContainment() {
+			if (containmentField == false)
+				return false;
+
 			containmentField = false;
 			containmentSound.Stop ();
-			ScreenMessages.PostScreenMessage ("Containment field is off, EM will decay!", 7.0f);
+			ScreenMessages.PostScreenMessage (Localizer.Format("#WD_ContainmentFieldOff"), 7.0f);
+			return true;
 		}
 
 		public void ReduceFactor()
@@ -441,22 +481,19 @@ namespace WarpDrive
 
 		private int GetMaximumFactor(double speed)
 		{
-			int maxFactor = 0;
-
-			for (int i = 0; i < warpFactors.Length; i++)
+			for (int i = warpFactors.Length-1; i > 0; i--)
 			{
-				if (warpFactors[i] >= speed)
-					return maxFactor;
-				maxFactor = i;
+				if (warpFactors[i] <= speed)
+					return i;
 			}
-			return maxFactor;
+			return 0;
 		}
 
 		private double GetExoticMatterRequired(double warpFactor)
 		{
 			var sqrtSpeed = Math.Sqrt(warpFactor);
 			var powerModifier = warpFactor < 1 ? 1 / sqrtSpeed : sqrtSpeed;
-			return powerModifier * minimumRequiredExoticMatter;
+			return powerModifier * minimalRequiredEM;
 		}
 
 		public static double getMaxAtmosphericAltitude(CelestialBody body)
@@ -465,9 +502,9 @@ namespace WarpDrive
 			return body.atmosphereDepth;
 		}
 
-		internal void PlayAlarm() {
-			alarmSound.Play ();
-		}
+		//internal void PlayAlarm() {
+		//	alarmSound.Play ();
+		//}
 
 		private void LoadMedia() {
 			// Sounds
@@ -491,5 +528,35 @@ namespace WarpDrive
 			alarmSound.loop = false;
 			alarmSound.Stop ();
 		}
+
+		public override string GetInfo() =>
+			Localizer.Format("#WD_Info") +
+			Localizer.Format("#WD_InfoStatus", upgradeStatus) +
+			Localizer.Format("#WD_InfoDrivePower", drivePower) +
+			Localizer.Format("#WD_InfoContainmentFieldPower", containmentFieldPower) +
+			Localizer.Format("#WD_InfoContainmentField", containmentFieldPower * baseECconsume, containmentFieldPower * baseEMproduce);
+
+		public override string GetModuleDisplayName() => Localizer.Format("#WD_InfoDisplayName");
+
+		/// <summary>
+		/// Return a string title for your module.
+		/// </summary>
+		/// <returns></returns>
+		public string GetModuleTitle() => Localizer.Format("#WD_InfoDisplayName");
+
+		/// <summary>
+		/// Return a method delegate to draw a custom panel, or null if not necessary.
+		/// </summary>
+		/// <returns></returns>
+		public Callback<UnityEngine.Rect> GetDrawModulePanelCallback() => null;
+
+		/// <summary>
+		/// Return a string to be displayed in the main 
+		/// information box on the tooltip, 
+		/// or null if nothing is that important to be up there.
+		/// </summary>
+		/// <returns></returns>
+		public string GetPrimaryField() => null;
+
 	}
 }

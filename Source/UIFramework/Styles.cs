@@ -58,12 +58,19 @@ namespace WarpDrive
         {
             if (!HighLogic.CurrentGame.Parameters.CustomParams<WarpDrive>().flatSkin)
             {
-                lastSkin = Skin.Unity;
-
+                if (HighLogic.CurrentGame.Parameters.CustomParams<WarpDrive>().stockSkin)
+                {
+                    lastSkin = Skin.Stock;
+                    GUI.skin = HighLogic.Skin;
+                }
+                else
+                {
+                    lastSkin = Skin.Unity;
+                }
                 label = GUI.skin.label;
                 textField = GUI.skin.textField;
                 textArea = GUI.skin.textArea;
-                button = GUI.skin.button;
+                button = new GUIStyle( GUI.skin.button);
                 toggle = GUI.skin.toggle;
                 window = GUI.skin.window;
                 horizontalScrollbar = GUI.skin.horizontalScrollbar;

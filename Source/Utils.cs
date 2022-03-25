@@ -10,13 +10,13 @@ namespace WarpDrive
 			double solarPower = 0;
 
 			List<ModuleDeployableSolarPanel> solarPanels =
-				vessel.FindPartModulesImplementing<ModuleDeployableSolarPanel> ();
-			
+				vessel.FindPartModulesImplementing<ModuleDeployableSolarPanel>();
+
 			for (int i = 0; i < solarPanels.Count; i++) {
-				ModuleDeployableSolarPanel solarPanel = solarPanels [i];
+				ModuleDeployableSolarPanel solarPanel = solarPanels[i];
 				if (solarPanel.deployState != ModuleDeployableSolarPanel.DeployState.BROKEN &&
-				    solarPanel.deployState != ModuleDeployableSolarPanel.DeployState.RETRACTED &&
-				    solarPanel.deployState != ModuleDeployableSolarPanel.DeployState.RETRACTING) {
+					solarPanel.deployState != ModuleDeployableSolarPanel.DeployState.RETRACTED &&
+					solarPanel.deployState != ModuleDeployableSolarPanel.DeployState.RETRACTING) {
 					solarPower += solarPanel.flowRate;
 				}
 			}
@@ -27,14 +27,14 @@ namespace WarpDrive
 		{
 			double otherPower = 0;
 			List<ModuleGenerator> powerModules =
-				vessel.FindPartModulesImplementing<ModuleGenerator> ();
+				vessel.FindPartModulesImplementing<ModuleGenerator>();
 
 			for (int i = 0; i < powerModules.Count; i++) {
 				// Find standard RTGs
-				ModuleGenerator powerModule = powerModules [i];
+				ModuleGenerator powerModule = powerModules[i];
 				if (powerModule.generatorIsActive || powerModule.isAlwaysActive) {
 					for (int j = 0; j < powerModule.resHandler.outputResources.Count; ++j) {
-						var resource = powerModule.resHandler.outputResources [j];
+						var resource = powerModule.resHandler.outputResources[j];
 						if (resource.name == "ElectricCharge") {
 							otherPower += resource.rate * powerModule.efficiency;
 						}
@@ -43,27 +43,27 @@ namespace WarpDrive
 			}
 
 			for (int i = 0; i < vessel.parts.Count; i++) {
-				var part = vessel.parts [i];
+				var part = vessel.parts[i];
 				// Search for other generators
 				PartModuleList modules = part.Modules;
 
 				for (int j = 0; j < modules.Count; j++) {
-					var module = modules [j];
+					var module = modules[j];
 
 					// Near future fission reactors
 					if (module.moduleName == "FissionGenerator") {
-						otherPower += double.Parse (module.Fields.GetValue ("CurrentGeneration").ToString ());
+						otherPower += double.Parse(module.Fields.GetValue("CurrentGeneration").ToString());
 					}
 				}
 
 				// USI reactors
-				ModuleResourceConverter converterModule = part.FindModuleImplementing<ModuleResourceConverter> ();
+				ModuleResourceConverter converterModule = part.FindModuleImplementing<ModuleResourceConverter>();
 				if (converterModule != null) {
-					if (converterModule.ModuleIsActive () && converterModule.ConverterName == "Reactor") {
+					if (converterModule.ModuleIsActive() && converterModule.ConverterName == "Reactor") {
 						for (int j = 0; j < converterModule.outputList.Count; ++j) {
-							var resource = converterModule.outputList [j];
+							var resource = converterModule.outputList[j];
 							if (resource.ResourceName == "ElectricCharge") {
-								otherPower += resource.Ratio * converterModule.GetEfficiencyMultiplier ();
+								otherPower += resource.Ratio * converterModule.GetEfficiencyMultiplier();
 							}
 						}
 					}
@@ -74,18 +74,29 @@ namespace WarpDrive
 
 		public static bool hasTech(string techid)
 		{
-			if (String.IsNullOrEmpty (techid))
+			if (String.IsNullOrEmpty(techid))
 				return false;
 
 			if (HighLogic.CurrentGame.Mode == Game.Modes.SANDBOX)
 				return true;
 
-			ProtoTechNode techstate = ResearchAndDevelopment.Instance.GetTechState (techid);
+			ProtoTechNode techstate = ResearchAndDevelopment.Instance.GetTechState(techid);
 			if (techstate != null)
 				return (techstate.state == RDTech.State.Available);
 			else
 				return false;
 		}
+
+		public static string Colorize(string text, UnityEngine.Color color, bool bold = false)
+		{
+			if (bold)
+				return $"<b><color=#{UnityEngine.ColorUtility.ToHtmlStringRGB(color)}>{text}</color></b>";
+			else
+				return $"<color=#{UnityEngine.ColorUtility.ToHtmlStringRGB(color)}>{text}</color>";
+
+		}
+	
+		
 	}
 }
 

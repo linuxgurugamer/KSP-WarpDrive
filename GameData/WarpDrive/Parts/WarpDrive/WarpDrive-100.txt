@@ -1,0 +1,47 @@
++PART[WarpDrive]
+{
+    @name = WarpDrive-100
+	@rescaleFactor = 4
+	
+	@node_stack_top[6] = 6
+    @node_stack_bottom[6] = 6
+	
+	@entryCost *= 16
+    @cost *= 16
+	@title = #WD_WarpDrive-100_title
+	@mass *= 64
+	
+	@MODULE[ModuleReactionWheel]
+    {
+        @PitchTorque *= 64
+        @YawTorque *= 64
+        @RollTorque *= 64
+
+        @RESOURCE[ElectricCharge]
+        {
+            @rate *= 64
+        }
+    }
+	
+	@RESOURCE[ExoticMatter]
+    {
+        @maxAmount *= 64
+    }
+
+    @MODULE[StandAloneAlcubierreDrive]
+    {
+		@drivePower *= 100
+        @containmentFieldPower *= 4
+
+		showUpgradesInModuleInfo = true
+
+		@UPGRADES
+		{
+			@UPGRADE,*
+			{		
+				@drivePower *= 100
+				@containmentFieldPower *= 4
+			}
+		}
+    }
+}
