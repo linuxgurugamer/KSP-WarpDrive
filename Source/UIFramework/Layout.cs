@@ -61,7 +61,8 @@ namespace WarpDrive
 		/// <param name="text">Text.</param>
 		/// <param name="color">Color.</param>
 		/// <param name="options">Options.</param>
-		public static bool Button(string text, string tooltip = "", Color? color = null, params GUILayoutOption[] options) {
+		public static bool Button(string text, string tooltip = "", Color? color = null, params GUILayoutOption[] options) 
+		{
 			Styles.button.normal.textColor = color ?? Color.white;
 			Styles.button.alignment = TextAnchor.MiddleCenter;
 			Styles.button.stretchWidth = true;

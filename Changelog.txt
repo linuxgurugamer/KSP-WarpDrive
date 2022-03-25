@@ -1,5 +1,31 @@
 Changelog
 	
+0.9.5
+	Fixed stock theme (enabled in the settings) looking like unity theme
+	Thanks to user @yaalov for these changes:
+		Add Localization
+
+		Add parameters of the WarpDrive in the config of the module
+			upgradeStatus
+			drivePower
+			containmentFieldPower
+			Add scaled 5.0m part
+
+		Add four B9PS PartUpgrades instead of the one hardcoded:
+			upgradeStatus (Pigeon, Mallard, Osprey, Peregrine)
+			drivePower (x1, x2, x4, x8)
+			containmentFieldPower (x1, x2, x3, x4)
+			Supports of the CTT
+
+		Fixed fov bug, that had appeared on deactivating warpdrive in the map view
+		Replace the toolbar button with a KSPEvent button in the PAW, because the Warpotron GUI only relates to the AlcubierreDrive module, and nothing else.  Several other WarpDrive Mods also have GUI opened using PAW.
+
+		Warpotron 9000
+			Add Tooltips on the Warpotron GUI
+			Add Speed Factor scale line on the Warpotron GUI
+			Put more helpful values on minimized Warpotron GUI
+
+
 0.9.4.2
 	Thanks to user @yalov for these changes:
 		Update Message for EC production
