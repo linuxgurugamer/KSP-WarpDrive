@@ -1,5 +1,8 @@
 Changelog
 	
+0.9.5.1
+	Fixed path for loading images (broken by new launcher)
+
 0.9.5
 	Fixed stock theme (enabled in the settings) looking like unity theme
 	Thanks to user @yaalov for these changes:
