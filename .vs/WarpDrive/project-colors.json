@@ -1,0 +1,16 @@
+{
+  "Version": 1,
+  "ProjectMap": {
+    "4b2e1018-3007-4720-9180-be7592b83ae7": {
+      "ProjectGuid": "4b2e1018-3007-4720-9180-be7592b83ae7",
+      "DisplayName": "Solution Items",
+      "ColorIndex": 0
+    },
+    "2aeb20c7-a498-480a-a8e7-6def4d731274": {
+      "ProjectGuid": "2aeb20c7-a498-480a-a8e7-6def4d731274",
+      "DisplayName": "WarpDrive",
+      "ColorIndex": 1
+    }
+  },
+  "NextColorIndex": 2
+}
