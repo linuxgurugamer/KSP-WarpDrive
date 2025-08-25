@@ -4,6 +4,7 @@ using System.Collections.Generic;
 
 using SpaceTuxUtility;
 using NearFutureSolar;
+using Kopernicus; // needed for linux compile
 
 namespace WarpDrive
 {

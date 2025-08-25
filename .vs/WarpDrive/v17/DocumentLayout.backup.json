@@ -3,6 +3,13 @@
   "WorkspaceRootPath": "D:\\github\\KSP-1-Mods\\KSP-WarpDrive\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{4B2E1018-3007-4720-9180-BE7592B83AE7}|Solution Items{4B2E1018-3007-4720-9180-BE7592B83AE7}|D:\\github\\KSP-1-Mods\\KSP-WarpDrive\\Changelog.txt||{8B382828-6202-11D1-8870-0000F87579D2}",
+      "RelativeMoniker": "D:0:0:{4B2E1018-3007-4720-9180-BE7592B83AE7}|Solution Items{4B2E1018-3007-4720-9180-BE7592B83AE7}|solutionrelative:Changelog.txt||{8B382828-6202-11D1-8870-0000F87579D2}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{00000000-0000-0000-0000-000000000000}|\u003CSolution\u003E|WarpDrive||{04B8AB82-A572-4FEF-95CE-5222444B6B64}|"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{2AEB20C7-A498-480A-A8E7-6DEF4D731274}|Source\\WarpDrive.csproj|d:\\github\\ksp-1-mods\\ksp-warpdrive\\source\\alcubierredrive.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{2AEB20C7-A498-480A-A8E7-6DEF4D731274}|Source\\WarpDrive.csproj|solutionrelative:source\\alcubierredrive.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
@@ -17,10 +24,6 @@
     {
       "AbsoluteMoniker": "D:0:0:{4B2E1018-3007-4720-9180-BE7592B83AE7}|Solution Items{4B2E1018-3007-4720-9180-BE7592B83AE7}|D:\\github\\KSP-1-Mods\\KSP-WarpDrive\\LICENSE.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}",
       "RelativeMoniker": "D:0:0:{4B2E1018-3007-4720-9180-BE7592B83AE7}|Solution Items{4B2E1018-3007-4720-9180-BE7592B83AE7}|solutionrelative:LICENSE.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{4B2E1018-3007-4720-9180-BE7592B83AE7}|Solution Items{4B2E1018-3007-4720-9180-BE7592B83AE7}|D:\\github\\KSP-1-Mods\\KSP-WarpDrive\\Changelog.txt||{8B382828-6202-11D1-8870-0000F87579D2}",
-      "RelativeMoniker": "D:0:0:{4B2E1018-3007-4720-9180-BE7592B83AE7}|Solution Items{4B2E1018-3007-4720-9180-BE7592B83AE7}|solutionrelative:Changelog.txt||{8B382828-6202-11D1-8870-0000F87579D2}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{4B2E1018-3007-4720-9180-BE7592B83AE7}|Solution Items{4B2E1018-3007-4720-9180-BE7592B83AE7}|D:\\github\\KSP-1-Mods\\KSP-WarpDrive\\WarpDrive.version||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
@@ -45,6 +48,9 @@
     {
       "AbsoluteMoniker": "D:0:0:{2AEB20C7-A498-480A-A8E7-6DEF4D731274}|Source\\WarpDrive.csproj|D:\\github\\KSP-1-Mods\\KSP-WarpDrive\\source\\uiframework\\palette.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{2AEB20C7-A498-480A-A8E7-6DEF4D731274}|Source\\WarpDrive.csproj|solutionrelative:source\\uiframework\\palette.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2AEB20C7-A498-480A-A8E7-6DEF4D731274}|Source\\WarpDrive.csproj|d:\\github\\ksp-1-mods\\ksp-warpdrive\\source\\||{B270807C-D8C6-49EB-8EBE-8E8D566637A1}|a54ad834-9219-4aa6-b589-607af21c3e26"
     }
   ],
   "DocumentGroupContainers": [
@@ -54,11 +60,23 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 6,
+          "SelectedChildIndex": 4,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 1,
+              "Title": "WarpDrive",
+              "DocumentMoniker": "D:\\github\\KSP-1-Mods\\KSP-WarpDrive\\Source\\WarpDrive.csproj",
+              "RelativeDocumentMoniker": "Source\\WarpDrive.csproj",
+              "ToolTip": "D:\\github\\KSP-1-Mods\\KSP-WarpDrive\\Source\\WarpDrive.csproj",
+              "RelativeToolTip": "Source\\WarpDrive.csproj",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001001|",
+              "WhenOpened": "2025-08-25T14:12:31.591Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
               "Title": "LICENSE.md",
               "DocumentMoniker": "D:\\github\\KSP-1-Mods\\KSP-WarpDrive\\LICENSE.md",
               "RelativeDocumentMoniker": "LICENSE.md",
@@ -71,7 +89,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
+              "DocumentIndex": 6,
               "Title": "WarpDrive.version",
               "DocumentMoniker": "D:\\github\\KSP-1-Mods\\KSP-WarpDrive\\WarpDrive.version",
               "RelativeDocumentMoniker": "WarpDrive.version",
@@ -84,7 +102,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 4,
               "Title": "Changelog.cfg",
               "DocumentMoniker": "D:\\github\\KSP-1-Mods\\KSP-WarpDrive\\Changelog.cfg",
               "RelativeDocumentMoniker": "Changelog.cfg",
@@ -97,20 +115,20 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 0,
               "Title": "Changelog.txt",
               "DocumentMoniker": "D:\\github\\KSP-1-Mods\\KSP-WarpDrive\\Changelog.txt",
               "RelativeDocumentMoniker": "Changelog.txt",
               "ToolTip": "D:\\github\\KSP-1-Mods\\KSP-WarpDrive\\Changelog.txt",
               "RelativeToolTip": "Changelog.txt",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003109|",
               "WhenOpened": "2025-08-25T13:52:39.945Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 7,
+              "DocumentIndex": 8,
               "Title": "en-us.cfg",
               "DocumentMoniker": "D:\\github\\KSP-1-Mods\\KSP-WarpDrive\\GameData\\WarpDrive\\localization\\en-us.cfg",
               "RelativeDocumentMoniker": "GameData\\WarpDrive\\localization\\en-us.cfg",
@@ -123,7 +141,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 6,
+              "DocumentIndex": 7,
               "Title": "deploy.bat",
               "DocumentMoniker": "D:\\github\\KSP-1-Mods\\KSP-WarpDrive\\deploy.bat",
               "RelativeDocumentMoniker": "deploy.bat",
@@ -136,20 +154,20 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 2,
               "Title": "AlcubierreDrive.cs",
               "DocumentMoniker": "D:\\github\\KSP-1-Mods\\KSP-WarpDrive\\Source\\AlcubierreDrive.cs",
               "RelativeDocumentMoniker": "Source\\AlcubierreDrive.cs",
               "ToolTip": "D:\\github\\KSP-1-Mods\\KSP-WarpDrive\\Source\\AlcubierreDrive.cs",
               "RelativeToolTip": "Source\\AlcubierreDrive.cs",
-              "ViewState": "AgIAAJMBAAAAAAAAAAAIwLgBAAAhAAAAAAAAAA==",
+              "ViewState": "AgIAAJMBAAAAAAAAAAAIwK4BAAAEAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-08-24T01:30:33.809Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 9,
+              "DocumentIndex": 10,
               "Title": "Resources.cfg",
               "DocumentMoniker": "D:\\github\\KSP-1-Mods\\KSP-WarpDrive\\GameData\\WarpDrive\\Resources.cfg",
               "RelativeDocumentMoniker": "GameData\\WarpDrive\\Resources.cfg",
@@ -178,7 +196,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 3,
               "Title": "Utils.cs",
               "DocumentMoniker": "D:\\github\\KSP-1-Mods\\KSP-WarpDrive\\Source\\Utils.cs",
               "RelativeDocumentMoniker": "Source\\Utils.cs",
@@ -194,7 +212,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 8,
+              "DocumentIndex": 9,
               "Title": "Warpotron9000.cs",
               "DocumentMoniker": "D:\\github\\KSP-1-Mods\\KSP-WarpDrive\\Source\\Warpotron9000.cs",
               "RelativeDocumentMoniker": "Source\\Warpotron9000.cs",
@@ -206,7 +224,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 10,
+              "DocumentIndex": 11,
               "Title": "Palette.cs",
               "DocumentMoniker": "D:\\github\\KSP-1-Mods\\KSP-WarpDrive\\Source\\UIFramework\\Palette.cs",
               "RelativeDocumentMoniker": "Source\\UIFramework\\Palette.cs",

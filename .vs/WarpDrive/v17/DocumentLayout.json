@@ -3,6 +3,10 @@
   "WorkspaceRootPath": "D:\\github\\KSP-1-Mods\\KSP-WarpDrive\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{2AEB20C7-A498-480A-A8E7-6DEF4D731274}|Source\\WarpDrive.csproj|D:\\github\\KSP-1-Mods\\KSP-WarpDrive\\source\\utils.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2AEB20C7-A498-480A-A8E7-6DEF4D731274}|Source\\WarpDrive.csproj|solutionrelative:source\\utils.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{4B2E1018-3007-4720-9180-BE7592B83AE7}|Solution Items{4B2E1018-3007-4720-9180-BE7592B83AE7}|D:\\github\\KSP-1-Mods\\KSP-WarpDrive\\Changelog.txt||{8B382828-6202-11D1-8870-0000F87579D2}",
       "RelativeMoniker": "D:0:0:{4B2E1018-3007-4720-9180-BE7592B83AE7}|Solution Items{4B2E1018-3007-4720-9180-BE7592B83AE7}|solutionrelative:Changelog.txt||{8B382828-6202-11D1-8870-0000F87579D2}"
     },
@@ -12,10 +16,6 @@
     {
       "AbsoluteMoniker": "D:0:0:{2AEB20C7-A498-480A-A8E7-6DEF4D731274}|Source\\WarpDrive.csproj|d:\\github\\ksp-1-mods\\ksp-warpdrive\\source\\alcubierredrive.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{2AEB20C7-A498-480A-A8E7-6DEF4D731274}|Source\\WarpDrive.csproj|solutionrelative:source\\alcubierredrive.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{2AEB20C7-A498-480A-A8E7-6DEF4D731274}|Source\\WarpDrive.csproj|D:\\github\\KSP-1-Mods\\KSP-WarpDrive\\source\\utils.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{2AEB20C7-A498-480A-A8E7-6DEF4D731274}|Source\\WarpDrive.csproj|solutionrelative:source\\utils.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{4B2E1018-3007-4720-9180-BE7592B83AE7}|Solution Items{4B2E1018-3007-4720-9180-BE7592B83AE7}|D:\\github\\KSP-1-Mods\\KSP-WarpDrive\\Changelog.cfg||{8B382828-6202-11D1-8870-0000F87579D2}",
@@ -60,11 +60,11 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 4,
+          "SelectedChildIndex": 13,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 2,
               "Title": "WarpDrive",
               "DocumentMoniker": "D:\\github\\KSP-1-Mods\\KSP-WarpDrive\\Source\\WarpDrive.csproj",
               "RelativeDocumentMoniker": "Source\\WarpDrive.csproj",
@@ -115,13 +115,13 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 1,
               "Title": "Changelog.txt",
               "DocumentMoniker": "D:\\github\\KSP-1-Mods\\KSP-WarpDrive\\Changelog.txt",
               "RelativeDocumentMoniker": "Changelog.txt",
               "ToolTip": "D:\\github\\KSP-1-Mods\\KSP-WarpDrive\\Changelog.txt",
               "RelativeToolTip": "Changelog.txt",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAAAUAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003109|",
               "WhenOpened": "2025-08-25T13:52:39.945Z",
               "EditorCaption": ""
@@ -154,7 +154,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 3,
               "Title": "AlcubierreDrive.cs",
               "DocumentMoniker": "D:\\github\\KSP-1-Mods\\KSP-WarpDrive\\Source\\AlcubierreDrive.cs",
               "RelativeDocumentMoniker": "Source\\AlcubierreDrive.cs",
@@ -196,15 +196,16 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 0,
               "Title": "Utils.cs",
               "DocumentMoniker": "D:\\github\\KSP-1-Mods\\KSP-WarpDrive\\Source\\Utils.cs",
               "RelativeDocumentMoniker": "Source\\Utils.cs",
               "ToolTip": "D:\\github\\KSP-1-Mods\\KSP-WarpDrive\\Source\\Utils.cs",
               "RelativeToolTip": "Source\\Utils.cs",
-              "ViewState": "AgIAAC0AAAAAAAAAAAAowDkAAAAiAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAYAAAAtAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-08-25T11:34:47.685Z"
+              "WhenOpened": "2025-08-25T11:34:47.685Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Bookmark",
