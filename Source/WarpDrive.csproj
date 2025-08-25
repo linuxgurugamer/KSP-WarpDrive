@@ -45,7 +45,16 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="ClickThroughBlocker">
-      <HintPath>R:\KSP_1.8.1_dev\GameData\000_ClickThroughBlocker\Plugins\ClickThroughBlocker.dll</HintPath>
+      <HintPath>$(KSPDIR)\GameData\000_ClickThroughBlocker\Plugins\ClickThroughBlocker.dll</HintPath>
+    </Reference>
+    <Reference Include="Kopernicus">
+      <HintPath>$(KSPDIR)\GameData\Kopernicus\Plugins\Kopernicus.dll</HintPath>
+    </Reference>
+    <Reference Include="NearFutureSolar">
+      <HintPath>$(KSPDIR)\GameData\NearFutureSolar\Plugins\NearFutureSolar.dll</HintPath>
+    </Reference>
+    <Reference Include="SpaceTuxUtility">
+      <HintPath>$(KSPDIR)\GameData\SpaceTuxLibrary\Plugins\SpaceTuxUtility.dll</HintPath>
     </Reference>
     <Reference Include="System" />
   </ItemGroup>

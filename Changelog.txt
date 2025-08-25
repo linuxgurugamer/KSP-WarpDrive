@@ -1,5 +1,14 @@
 Changelog
 	
+0.9.5.2
+	Merged in changes converting from png to dds from github user @Shammyofwar
+	Added code to stop timewarping when containment field is lost
+	Added support for additional solarpanels:
+		KopernicusSolarPanel
+		ModuleCurvedSolarPanel
+	Added new dependency:  SpaceTuxLibrary
+	Added Changelog.cfg
+
 0.9.5.1
 	Fixed path for loading images (broken by new launcher)
 

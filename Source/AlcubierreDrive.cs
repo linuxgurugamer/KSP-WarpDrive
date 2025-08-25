@@ -1,9 +1,10 @@
 ﻿using Expansions.Missions.Adjusters;
 using KSP.Localization;
+using LibNoise.Modifiers;
 using System;
 using System.Collections.Generic;
-using UnityEngine;
 using System.Linq;
+using UnityEngine;
 using static WarpDrive.Logging;
 
 namespace WarpDrive
@@ -257,7 +258,12 @@ namespace WarpDrive
 				ScreenMessages.PostScreenMessage (Localizer.Format("#WD_ContainmentFieldNotEnoughECtoStable"), 7.0f);
 				ScreenMessages.PostScreenMessage (Localizer.Format("#WD_ContainmentFieldOff"), 7.0f);
 				StopContainment ();
-			} else
+
+                TimeWarp.SetRate(0, true);
+
+
+            }
+            else
 				vessel.RequestResource (part, emResource.id, -1 * containmentFieldPowerMax * baseEMproduce * timeDelta, true);
 		}
 
@@ -420,6 +426,7 @@ namespace WarpDrive
 				ScreenMessages.PostScreenMessage (
 					Localizer.Format("#WD_ContainmentFieldNotEnoughECtoCreate", (containmentFieldPowerMax * 100).ToString("F0")), 
 					7.0f);
+				ScreenMessages.PostScreenMessage("CalculatedECProduction: " + ecProduction.ToString());
 				return false;
 			}
 			containmentField = true;
