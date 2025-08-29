@@ -1,5 +1,20 @@
 Changelog
 	
+0.9.5.3
+	Fixed bug where power generation from anything other than Solar was ignored at initial calcs
+	Rewrote the calculations of how much power production is available.  Now covers:
+		KopernicusSolarPanel -		 Kopernicus
+		weatherDrivenSolarPanel -	 Weather Driven Solar Panel - https://github.com/Aebestach/WeatherDrivenSolarPanel
+		ModuleDeployableSolarPanel - Stock
+		ModuleGenerator -			 Stock
+		ModuleResourceConverter -	 Stock
+		FissionReactor -			 Near Future Electrical
+		ModuleResourceHarvester -	 Stock
+		ModuleEnginesFX -			 Stock
+		ModuleEngines -				 Stock
+		ModuleAlternator -			 Stock
+		FissionGenerator -			 Near Future fission reactors
+
 0.9.5.2
 	Merged in changes converting from png to dds from github user @Shammyofwar
 	Added code to stop timewarping when containment field is lost

@@ -1,10 +1,8 @@
 ﻿using Kopernicus.Components;
+using NearFutureSolar;
 using System;
 using System.Collections.Generic;
-
-using SpaceTuxUtility;
-using NearFutureSolar;
-using Kopernicus; // needed for linux compile
+using UnityEngine;
 
 namespace WarpDrive
 {
@@ -14,6 +12,7 @@ namespace WarpDrive
         {
             double solarPower = 0;
 
+#if false
             List<ModuleDeployableSolarPanel> solarPanels =
                 vessel.FindPartModulesImplementing<ModuleDeployableSolarPanel>();
 
@@ -27,12 +26,42 @@ namespace WarpDrive
                     solarPower += solarPanel.flowRate;
                 }
             }
+
+            solarPower += CalculateGeneratorOutput(vessel);
+
             if (SpaceTuxUtility.HasMod.hasMod("Kopernicus"))
                 solarPower += CalculateKopernicusSolarPower(vessel);
             if (SpaceTuxUtility.HasMod.hasMod("NearFutureSolar"))
                 solarPower += CalculateNearFutureSolarPower(vessel);
 
+#endif
+
+            solarPower = CalculatePowerGeneration.VesselPowerGeneration(vessel);
+            UnityEngine.Debug.Log("CalculateSolarPower, solarPower: " + solarPower + ", Total Power Gen: " +
+                CalculatePowerGeneration.VesselPowerGeneration(vessel));
             return solarPower;
+        }
+
+#if false
+        internal static double CalculateGeneratorOutput(Vessel vessel)
+        {
+            double genPower = 0;
+            List<ModuleGenerator> generators =
+                vessel.FindPartModulesImplementing<ModuleGenerator>();
+
+            for (int i = 0; i < generators.Count; i++)
+            {
+                ModuleGenerator gen = generators[i];
+                if (gen.isAlwaysActive || gen.generatorIsActive)
+                {
+                    foreach (ModuleResource outp in gen.resHandler.outputResources)
+                        if (outp.name == "ElectricCharge")
+                            genPower += outp.rate;
+                }
+            }
+
+            return genPower;
+
         }
 
         internal static double CalculateKopernicusSolarPower(Vessel vessel)
@@ -74,8 +103,9 @@ namespace WarpDrive
 
             return solarPower;
         }
+#endif
 
-
+#if false
         internal static double CalculateOtherPower(Vessel vessel)
         {
             double otherPower = 0;
@@ -135,6 +165,7 @@ namespace WarpDrive
             }
             return otherPower;
         } // So many ifs.....
+#endif
 
         public static bool hasTech(string techid)
         {

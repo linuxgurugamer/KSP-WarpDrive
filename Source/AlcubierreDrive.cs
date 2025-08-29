@@ -421,7 +421,7 @@ namespace WarpDrive
 		}
 
 		public bool StartContainment() {
-			double ecProduction = Utils.CalculateSolarPower (vessel) + Utils.CalculateOtherPower (vessel);
+			double ecProduction = Utils.CalculateSolarPower(vessel); // + Utils.CalculateOtherPower (vessel);
 			if (ecProduction < containmentFieldPowerMax * 100) {
 				ScreenMessages.PostScreenMessage (
 					Localizer.Format("#WD_ContainmentFieldNotEnoughECtoCreate", (containmentFieldPowerMax * 100).ToString("F0")), 

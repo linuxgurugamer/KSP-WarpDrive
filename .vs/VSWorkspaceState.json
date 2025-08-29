@@ -1,11 +1,7 @@
 {
   "ExpandedNodes": [
-    "",
-    "\\GameData",
-    "\\GameData\\WarpDrive",
-    "\\GameData\\WarpDrive\\WarpDrive",
-    "\\Source"
+    ""
   ],
-  "SelectedNode": "\\GameData\\WarpDrive\\WarpDrive\\WarpDrive.cfg",
+  "SelectedNode": "\\WarpDrive.sln",
   "PreviewInSolutionExplorer": false
 }
