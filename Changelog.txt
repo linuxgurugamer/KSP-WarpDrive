@@ -1,6 +1,6 @@
 Changelog
 	
-0.9.5.3
+0.9.5.4
 	Fixed bug where power generation from anything other than Solar was ignored at initial calcs
 	Rewrote the calculations of how much power production is available.  Now covers:
 		KopernicusSolarPanel -		 Kopernicus
