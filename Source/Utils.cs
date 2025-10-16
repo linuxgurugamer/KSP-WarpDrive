@@ -1,5 +1,5 @@
-﻿using Kopernicus.Components;
-using NearFutureSolar;
+﻿//using Kopernicus.Components;
+//using NearFutureSolar;
 using System;
 using System.Collections.Generic;
 using UnityEngine;

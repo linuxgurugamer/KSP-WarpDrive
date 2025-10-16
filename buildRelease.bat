@@ -26,11 +26,11 @@ rem README is the readme file
 set GAMEDIR=WarpDrive
 set GAMEDATA="GameData\"
 set VERSIONFILE=%GAMEDIR%.version
-set LICENSE=License.txt
+set LICENSE=License.md
 set README=ReadMe.md
 
 set RELEASEDIR=d:\Users\jbb\release
-set ZIP="c:\Program Files\7-zip\7z.exe"
+set ZIP="d:\Program Files\7-zip\7z.exe"
 
 rem Copy files to GameData locations
 

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using KSP.Localization;
+using System;
 using System.Collections.Generic;
 
 namespace WarpDrive
@@ -95,6 +96,18 @@ namespace WarpDrive
                                     }
                                 }
                             }
+                            break;
+                          
+                        case "ModuleSystemHeatFissionReactor": // SystemHeat
+                            {
+                                double.TryParse(tmpPM.Fields.GetValue("MaxElectricalGeneration").ToString(), out double results);
+                                am_prod += results;
+#if DEBUG
+                                UnityEngine.Debug.Log("VesselPowerGeneration." + tmpPM.moduleName + ", flowRate: " + results);
+#endif
+
+                            }
+
                             break;
                         case "ModuleResourceHarvester":
                             {
